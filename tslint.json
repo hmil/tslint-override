@@ -5,5 +5,7 @@
         "override-jsdoc-tag": true,
         "quotemark": [ true, "single" ]
     },
-    "rulesDirectory": "."
+    "rulesDirectory": [
+        "."
+    ]
 }
