@@ -38,7 +38,7 @@ Then add a `rules` and a `rulesDirectory` entry to your `tslint.json`.
 }
 ```
 
-This rule **requires type information**, which means that errors will not show in VSCode (see https://github.com/Microsoft/vscode-tslint/issues/70#issuecomment-241041929 ). It will work out of the box when running `tslint` however.
+This rule **requires type information**, which means that errors will not show in VSCode (see [vscode-tslint#70](https://github.com/Microsoft/vscode-tslint/issues/70) ). It will work out of the box when running `tslint` however.
 
 ## What
 
