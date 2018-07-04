@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - "node/*"
+  - "lts/*"
   - "node"
 script:
-  npm test
-  ./test-fixes.sh
+  - npm test
+  - ./test-fixes.sh
