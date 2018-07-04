@@ -1,0 +1,33 @@
+abstract class First {
+
+}
+
+class Foo extends First {
+    /* non doc comment */
+    /** doc comment **/
+    public bar(): void { }
+
+    public notToOverride(): void { } 
+}
+
+class Baz extends Foo{
+    /**
+     * Multiline doc comment
+     @Override
+     ~~~~~~~~~ [Syntax error: 'Override' should be 'override' (case sensitive)]
+     */
+    /**
+      Second multi doc comment
+      @override
+       ~~~~~~~~ [@override jsdoc tag already specified]
+    **/
+    public bar(): void { }
+    
+    /**
+     * @override
+     */
+    public baz(): void { }
+
+    public notToOverride(): void { }
+           ~~~~~~~~~~~~~               [Method Baz#notToOverride is overriding Foo#notToOverride. Use the @override JSDoc tag if the override is intended]
+}
