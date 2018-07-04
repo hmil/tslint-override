@@ -1,9 +1,13 @@
 {
-    "extends": "tslint:recommended",
+    "extends": [
+        "tslint:recommended",
+        "./tslint-override.json"
+    ],
     "rules": {
         "max-classes-per-file": false,
-        "override-jsdoc-tag": true,
+        "object-literal-sort-keys": false,
+        "trailing-comma": false,
+        "max-line-length": [ true, 140 ],
         "quotemark": [ true, "single" ]
-    },
-    "rulesDirectory": "."
+    }
 }

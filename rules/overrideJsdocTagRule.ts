@@ -3,10 +3,8 @@ import * as ts from 'typescript';
 
 const OPTION_SUFFICIENT = 'sufficient';
 const OPTION_NECESSARY = 'necessary';
-const OPTION_BOTH = 'both';
 
 export class Rule extends Lint.Rules.TypedRule {
-    /* tslint:disable:object-literal-sort-keys */
     public static metadata: Lint.IRuleMetadata = {
         ruleName: 'override-jsdoc-tag',
         description: 'Uses the @override JSDoc tag to prevent override mistakes',
@@ -19,7 +17,6 @@ export class Rule extends Lint.Rules.TypedRule {
             You can limit the scope of the rule by using one of:
             * \`${OPTION_SUFFICIENT}\`: a method with the @override keyword must override something
             * \`${OPTION_NECESSARY}\`: a method can only override something if it has the @override keyword
-            * \`${OPTION_BOTH}\` (default): a method has the override keyword iff it overrides something
         `,
         options: {
             type: 'array',
@@ -27,7 +24,7 @@ export class Rule extends Lint.Rules.TypedRule {
             maxItems: 2,
             items: {
                 type: 'string',
-                enum: [OPTION_NECESSARY, OPTION_SUFFICIENT, OPTION_BOTH],
+                enum: [OPTION_NECESSARY, OPTION_SUFFICIENT],
             },
         },
         optionExamples: [
@@ -37,12 +34,11 @@ export class Rule extends Lint.Rules.TypedRule {
         type: 'typescript',
         typescriptOnly: true,
     };
-    /* tslint:enable:object-literal-sort-keys */
 
     /** @override */
     public applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): Lint.RuleFailure[] {
         const args = this.ruleArguments;
-        const enableAllChecks = args.length === 0 || hasArg(OPTION_BOTH);
+        const enableAllChecks = args.length === 0;
         return this.applyWithWalker(
             new Walker(sourceFile, this.ruleName, {
                 necessary: enableAllChecks || hasArg(OPTION_NECESSARY),
