@@ -4,11 +4,11 @@
   "description": "tslint support for an override keyword",
   "main": "noImplicitOverride.js",
   "scripts": {
-    "test": "tslint --test test/*",
+    "test": "npm run lint && tslint --test test/*",
     "lint": "tslint -p .",
     "tslint": "tslint",
     "build": "npm run clean && tsc -p .",
-    "clean": "rm *.js"
+    "clean": "rm -f *.js"
   },
   "repository": {
     "type": "git",
