@@ -44,6 +44,6 @@ const prompt = inquirer.createPromptModule();
 
     exec(`git add -u && git commit -m "release v${version}"`);
     exec(`git tag -s -m "${message}" "v${version}"`);
-    exec('git push --tags master');
+    exec('git push --tags origin master');
 
 })();

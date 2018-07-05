@@ -1,6 +1,6 @@
 {
     "name": "tslint-override",
-    "version": "0.0.0-dev.7",
+    "version": "0.0.0-dev.8",
     "description": "tslint support for an override keyword",
     "main": "tslint-override.json",
     "scripts": {
