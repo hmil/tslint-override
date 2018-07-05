@@ -24,12 +24,13 @@ const prompt = inquirer.createPromptModule();
         message: 'Short release message'
     }]);
 
-    echo(`About to release ${version}: ${message}. Proceed? [y/N]`);
+    echo(`About to release ${version}: ${message}.`);
 
     const { proceed } = await prompt<{proceed: boolean}>([{
         type: 'confirm',
         name: 'proceed',
-        message: 'Proceed?'
+        message: 'Proceed?',
+        default: false
     }]);
 
     if (proceed !== true) {
