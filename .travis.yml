@@ -6,7 +6,6 @@ script:
 - npm run build
 - npm test
 - "./test-fixes.sh"
-before_deploy: "cp ./src/*.js ./"
 deploy:
   provider: npm
   email: hadrien.milano@gmail.com
