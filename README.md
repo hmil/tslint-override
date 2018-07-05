@@ -11,8 +11,8 @@ Most modern object oriented languages provide an `override` keyword to prevent m
 
 Here are some reasons to use this rule:
 - You may want to override a method, but introduce a typo in the method name and end up creating a new method by accident.
-- You accidentally override a method of a base class because the method you just added shares the same name and signature.
-- A library author introduces a new method to a base class, which happens to share the name and signature of a method of your own.
+- You accidentally override a method of a base class because the method you just added shares the same name and has a compatible signature.
+- A library author introduces a new method to a base class, which gets accidentally overridden by a method you wrote in a subclass in the past.
 
 ## How
 

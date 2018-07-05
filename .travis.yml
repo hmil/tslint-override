@@ -1,8 +1,16 @@
 language: node_js
 node_js:
-  - "lts/*"
-  - "node"
+- lts/*
+- node
 script:
-  - npm run build
-  - npm test
-  - ./test-fixes.sh
+- npm run build
+- npm test
+- "./test-fixes.sh"
+deploy:
+  provider: npm
+  email: hadrien.milano@gmail.com
+  api_key:
+    secure: ZsdPJrJgBS9lalLQEv5elqERm/ITB8WASZX8GfsLYeuaAZ/qfDslhVNVNS+wTDGco/X/LSHnkdBZqevEZ83LWXF8Bu7gS8UpGWpCM0ny8BhC1SK/uxTTsGTYqL43wY4xuQGS+N61e/47TfuAFpvcYNESrFjtRu9J2rjLbI0p4Eaf8QTcqGbTWN/72k1AC4PJdNLYgjuoSJZFNKc8Rvk70h44LGfpIB740b2dMv88fyOhHdKlmWZf63XgURIBeHVZnzoQMkCDap4SHRnUlPKZJZimLrjnqFU1I4z0q0MTNpqYVSEz/KoWeVurTDIIWnYLpYFiUZLdYHQFi0oSCiJW7rU1uQ3UoM4xwTjG+HG9fUNEIyNN9WrVMPSbG4/JPYcQuNmcowXGazS7Nr80hEiyqp5BjIdv06Xc9sIvnOQ/gsbB3/Ai5++CQ8nmvL851KIGQrwt+cC/66WywwW03A8CgqDjFEgUf71+hjcIVuzHH/jBjdrNvkRjn+hhhDYeKZjks9MLJDdQf33wYjZT2TSd+08L1p4xeA5xTclIdsRuTiaAH0Fc66YKc+gNXjggL/xRtlXW6RAB3M4vx4TVP6v1h2af1cf2O1FAGpxvPncB9YPH6e34O+etDKee7zlQzy5QZxig6ymlppiKawQyj+I9/P5pCbeE8tyJal8bOGWccD8=
+  on:
+    tags: true
+    repo: hmil/tslint-override
