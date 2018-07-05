@@ -1,6 +1,6 @@
 {
     "rulesDirectory":  "./rules",
     "rules": {
-        "override-jsdoc-tag": true
+        "override-jsdoc-tag": [ true, "necessary", "sufficient" ]
     }
 }
