@@ -20,7 +20,7 @@ Here are some reasons to use this rule:
 npm install --save-dev tslint-override
 ```
 
-Then extend the tslint-override configuration (note that you can extend multiple configs if you need to).
+Then, in your `tslint.json`, extend the tslint-override configuration.
 ```json
 {
     "extends": [

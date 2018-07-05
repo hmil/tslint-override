@@ -27,7 +27,7 @@ class Baz extends Foo{
      * @override
      */
     public baz(): void { }
-           ~~~               [Method is not overriding anything]
+           ~~~               [Method with @override keyword does not override any base class method]
 
     public notToOverride(): void { }
 }

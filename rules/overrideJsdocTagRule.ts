@@ -94,7 +94,7 @@ class Walker extends Lint.AbstractWalker<string[]> {
         }
         if (this.config.sufficient && foundTag !== undefined) {
             if (!this.checkBaseTypesOverrides(parentType.getBaseTypes(), node)) {
-                this.addFailureAtNode(node.name, `Method is not overriding anything`,
+                this.addFailureAtNode(node.name, `Method with @override keyword does not override any base class method`,
                     Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
             }
         } else if (this.config.necessary && foundTag === undefined) {
