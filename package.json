@@ -33,7 +33,12 @@
   ],
   "homepage": "https://github.com/hmil/tslint-override#readme",
   "devDependencies": {
+    "@types/inquirer": "0.0.42",
     "@types/node": "^10.5.1",
+    "@types/shelljs": "^0.8.0",
+    "inquirer": "^6.0.0",
+    "shelljs": "^0.8.2",
+    "ts-node": "^7.0.0",
     "tslint": "^5.10.0",
     "typescript": "^2.9.2"
   }

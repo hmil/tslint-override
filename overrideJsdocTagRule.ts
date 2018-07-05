@@ -6,7 +6,6 @@ const OPTION_NECESSARY = 'necessary';
 const OPTION_BOTH = 'both';
 
 export class Rule extends Lint.Rules.TypedRule {
-    /* tslint:disable:object-literal-sort-keys */
     public static metadata: Lint.IRuleMetadata = {
         ruleName: 'override-jsdoc-tag',
         description: 'Uses the @override JSDoc tag to prevent override mistakes',
@@ -37,7 +36,6 @@ export class Rule extends Lint.Rules.TypedRule {
         type: 'typescript',
         typescriptOnly: true,
     };
-    /* tslint:enable:object-literal-sort-keys */
 
     /** @override */
     public applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): Lint.RuleFailure[] {
