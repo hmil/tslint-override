@@ -33,7 +33,35 @@ This rule **requires type information**, which means that errors will not show i
 
 ## What
 
-TODO: Extract example from test cases
+```typescript
+export class Basic {
+
+    public overridePlease(): void {
+        /* empty */
+    }
+
+    public doNotOverride(): void {
+        /* empty */
+    }
+}
+
+export class Child extends Basic {
+
+    /** @override */
+    public overridePlease(): void {
+        /* empty */
+    }
+
+    /** @override */
+    public overidePlease(): void { // ERROR: Method with @override tag is not overriding anything
+        /* empty */
+    }
+
+    public doNotOverride(): void { // ERROR: Method Child#doNotOverride is overriding Basic#doNotOverride. Use the @override JSDoc tag if the override is intended
+        /* empty */
+    }
+}
+```
 
 ## Contributing, Credits, etc
 
