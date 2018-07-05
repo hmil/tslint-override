@@ -6,6 +6,6 @@
         ]
     },
     "include": [
-        "./*.ts"
+        "rules/*.ts"
     ]
 }

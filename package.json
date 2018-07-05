@@ -1,14 +1,14 @@
 {
     "name": "tslint-override",
-    "version": "0.0.0-dev.3",
+    "version": "0.0.0-dev.7",
     "description": "tslint support for an override keyword",
-    "main": "noImplicitOverride.js",
+    "main": "tslint-override.json",
     "scripts": {
         "test": "npm run lint && tslint --test test/*",
         "lint": "tslint -p .",
         "tslint": "tslint",
         "build": "npm run clean && tsc -p .",
-        "clean": "rm -f *.js",
+        "clean": "rm -f rules/*.js",
         "release": "ts-node release.sh.ts"
     },
     "repository": {
@@ -30,7 +30,8 @@
         "url": "https://github.com/hmil/tslint-override/issues"
     },
     "files": [
-        "*.js"
+        "rules/*.js",
+        "tslint-override.json"
     ],
     "homepage": "https://github.com/hmil/tslint-override#readme",
     "devDependencies": {

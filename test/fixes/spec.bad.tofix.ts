@@ -19,7 +19,7 @@ export class Baz extends Foo{
       Second multi doc comment
       **/
     public bar(): void { }
-    
+
     /**
      * 
      */

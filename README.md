@@ -20,19 +20,10 @@ Here are some reasons to use this rule:
 npm install --save-dev tslint-override
 ```
 
-Then add a `rules` and a `rulesDirectory` entry to your `tslint.json`.
-
+Then extend the tslint-override configuration (note that you can extend multiple configs if you need to).
 ```json
 {
-    "rules": {
-
-        /* other rules here */
-
-        "override-jsdoc-tag": true,
-    },
-
-
-    "rulesDirectory": [
+    "extends": [
         "tslint-override"
     ]
 }
