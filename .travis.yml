@@ -14,3 +14,4 @@ deploy:
   on:
     tags: true
     repo: hmil/tslint-override
+  skip_cleanup: true
