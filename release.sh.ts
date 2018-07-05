@@ -6,16 +6,9 @@ const prompt = inquirer.createPromptModule();
 
 (async () => {
     if (exec('git status --porcelain').stdout.trim() !== '') {
-        const { releaseDirty } = await prompt<{releaseDirty: string}>([{
-            default: false,
-            message: `Your git repository is dirty. You should commit all local changes before moving on. Proceed anyway?`,
-            name: 'releaseDirty',
-            type: 'confirm'
-        }]);
-        if (!releaseDirty) {
-            process.exit(1);
-            return;
-        }
+        echo('Your repository is dirty. Aborting');
+        process.exit(1);
+        return;
     }
 
     const { version, message } = await prompt<{version: string, message: string}>([{
@@ -33,15 +26,15 @@ const prompt = inquirer.createPromptModule();
 
     echo(`About to release ${version}: ${message}. Proceed? [y/N]`);
 
-    const { proceed } = await prompt<{proceed: string}>([{
-        type: '',
+    const { proceed } = await prompt<{proceed: boolean}>([{
+        type: 'confirm',
         name: 'proceed',
-        message: 'Version (ex: 1.2.3-tag.4)?',
-        filter: (val) => val.toLowerCase()
+        message: 'Proceed?'
     }]);
 
-    if (proceed !== 'yes') {
+    if (proceed !== true) {
         echo('Aborting');
+        process.exit(1);
         return;
     }
 
