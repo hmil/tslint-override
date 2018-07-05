@@ -1,46 +1,46 @@
 {
-  "name": "tslint-override",
-  "version": "0.0.0-dev.1",
-  "description": "tslint support for an override keyword",
-  "main": "noImplicitOverride.js",
-  "scripts": {
-    "test": "npm run lint && tslint --test test/*",
-    "lint": "tslint -p .",
-    "tslint": "tslint",
-    "build": "npm run clean && tsc -p .",
-    "clean": "rm -f *.js",
-    "release": "ts-node release.sh.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/hmil/tslint-override.git"
-  },
-  "keywords": [
-    "override",
-    "keyword",
-    "typescript",
-    "tslint",
-    "final",
-    "subclass",
-    "class"
-  ],
-  "author": "Hadrien Milano <https://hmil.fr>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/hmil/tslint-override/issues"
-  },
-  "files": [
-    "*.js"
-  ],
-  "homepage": "https://github.com/hmil/tslint-override#readme",
-  "devDependencies": {
-    "@types/inquirer": "0.0.42",
-    "@types/node": "^10.5.1",
-    "@types/shelljs": "^0.8.0",
-    "inquirer": "^6.0.0",
-    "shelljs": "^0.8.2",
-    "ts-node": "^7.0.0",
-    "tslint": "^5.10.0",
-    "typescript": "^2.9.2"
-  }
+    "name": "tslint-override",
+    "version": "0.0.0-dev.3",
+    "description": "tslint support for an override keyword",
+    "main": "noImplicitOverride.js",
+    "scripts": {
+        "test": "npm run lint && tslint --test test/*",
+        "lint": "tslint -p .",
+        "tslint": "tslint",
+        "build": "npm run clean && tsc -p .",
+        "clean": "rm -f *.js",
+        "release": "ts-node release.sh.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/hmil/tslint-override.git"
+    },
+    "keywords": [
+        "override",
+        "keyword",
+        "typescript",
+        "tslint",
+        "final",
+        "subclass",
+        "class"
+    ],
+    "author": "Hadrien Milano <https://hmil.fr>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/hmil/tslint-override/issues"
+    },
+    "files": [
+        "*.js"
+    ],
+    "homepage": "https://github.com/hmil/tslint-override#readme",
+    "devDependencies": {
+        "@types/inquirer": "0.0.42",
+        "@types/node": "^10.5.1",
+        "@types/shelljs": "^0.8.0",
+        "inquirer": "^6.0.0",
+        "shelljs": "^0.8.2",
+        "ts-node": "^7.0.0",
+        "tslint": "^5.10.0",
+        "typescript": "^2.9.2"
+    }
 }
