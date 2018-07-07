@@ -1,10 +1,19 @@
 abstract class ABase {
-
+    public aMethodToOverride(): void { }
+    public aMethodNotToOverride(): void { }
 }
 
 class Base extends ABase {
     public methodToOverride(): void { }
-    public methodNotToOverride(): void { } 
+    public methodNotToOverride(): void { }
+}
+
+const DynBase = class extends ABase {
+    public methodToOverride(): void { }
+    public methodNotToOverride(): void { }
+}
+
+class Intermediary extends DynBase {
 }
 
 class Example1 extends Base {
@@ -19,7 +28,7 @@ class Example1 extends Base {
        ~~~~~~~~ [@override jsdoc tag already specified]
     **/
     public methodToOverride(): void { }
-    
+
     /**
      * @override
      */
@@ -27,5 +36,65 @@ class Example1 extends Base {
            ~~~~~~~~~~~~~~~~            [Method with @override keyword does not override any base class method]
 
     public methodNotToOverride(): void { }
-           ~~~~~~~~~~~~~~~~~~~         [Method Example1#methodNotToOverride is overriding Base#methodNotToOverride. Use the @override JSDoc tag if the override is intended]
+           ~~~~~~~~~~~~~~~~~~~         [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */
+    public aMethodToOverride(): void { }
+
+    public aMethodNotToOverride(): void { }
+           ~~~~~~~~~~~~~~~~~~~~        [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+}
+
+const Example2 = class extends Base {
+    /** @override **/
+    public methodToOverride(): void { }
+
+    /** @override */
+    public mehtodToOverride(): void { }
+           ~~~~~~~~~~~~~~~~            [Method with @override keyword does not override any base class method]
+
+    public methodNotToOverride(): void { }
+           ~~~~~~~~~~~~~~~~~~~         [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */
+    public aMethodToOverride(): void { }
+
+    public aMethodNotToOverride(): void { }
+           ~~~~~~~~~~~~~~~~~~~~        [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+}
+
+class Example3 extends DynBase {
+    /** @override **/
+    public methodToOverride(): void { }
+
+    /** @override */
+    public mehtodToOverride(): void { }
+           ~~~~~~~~~~~~~~~~            [Method with @override keyword does not override any base class method]
+
+    public methodNotToOverride(): void { }
+           ~~~~~~~~~~~~~~~~~~~         [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */
+    public aMethodToOverride(): void { }
+
+    public aMethodNotToOverride(): void { }
+           ~~~~~~~~~~~~~~~~~~~~        [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+}
+
+class Example4 extends Intermediary {
+    /** @override **/
+    public methodToOverride(): void { }
+
+    /** @override */
+    public mehtodToOverride(): void { }
+           ~~~~~~~~~~~~~~~~            [Method with @override keyword does not override any base class method]
+
+    public methodNotToOverride(): void { }
+           ~~~~~~~~~~~~~~~~~~~         [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */
+    public aMethodToOverride(): void { }
+
+    public aMethodNotToOverride(): void { }
+           ~~~~~~~~~~~~~~~~~~~~        [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
 }

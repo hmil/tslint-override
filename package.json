@@ -4,7 +4,7 @@
     "description": "tslint support for an override keyword",
     "main": "tslint-override.json",
     "scripts": {
-        "test": "npm run lint && tslint --test test/*",
+        "test": "tslint --test test/*",
         "lint": "tslint -p .",
         "tslint": "tslint",
         "build": "npm run clean && tsc -p .",

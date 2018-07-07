@@ -4,6 +4,7 @@ node_js:
 - node
 script:
 - npm run build
+- npm run lint
 - npm test
 - "./test-fixes.sh"
 deploy:

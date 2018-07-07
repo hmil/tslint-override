@@ -65,39 +65,28 @@ class Walker extends Lint.AbstractWalker<undefined> {
         if (symbol == null) {
             return;
         }
+
         const parent = node.parent;
-        if (!isClassType(parent)) {
-            return undefined;
+        if (parent == null || !isClassType(parent)) {
+            return;
         }
-        const parentType = this.checker.getTypeAtLocation(parent);
-        if (!parentType.isClass) {
-            return undefined;
-        }
-        if (foundTag !== undefined) {
-            if (!this.checkBaseTypesOverrides(parentType.getBaseTypes(), node)) {
-                this.addFailureAtNode(node.name, `Method with @override keyword does not override any base class method`,
-                    Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
-            }
-        } else if (foundTag === undefined) {
-            const base = this.checkBaseTypesOverrides(parentType.getBaseTypes(), node);
-            if (base !== undefined) {
-                const fix = this.fixAddOverrideKeyword(node);
-                this.addFailureAtNode(node.name,
-                        `Method ${this.prettyPrintMethod(node, parentType)} `
-                        + `is overriding ${this.prettyPrintMethod(node, base)}. `
-                        + `Use the @override JSDoc tag if the override is intended`,
-                        fix,
-                    );
-            }
+
+        const base = this.checkHeritageChain(parent, node);
+
+        if (foundTag !== undefined && base === undefined) {
+            this.addFailureAtNode(node.name, 'Method with @override keyword does not override any base class method',
+            Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
+        } else if (foundTag === undefined && base !== undefined) {
+            const fix = this.fixAddOverrideKeyword(node);
+            this.addFailureAtNode(node.name,
+                    'Method is overriding a base method. Use the @override JSDoc tag if the override is intended',
+                    fix,
+                );
         }
     }
 
     private fixAddOverrideKeyword(node: ts.MethodDeclaration) {
         return Lint.Replacement.appendText(node.getStart(), '/** @override */ ');
-    }
-
-    private prettyPrintMethod(methodDecl: ts.MethodDeclaration, klass: ts.Type) {
-        return klass.getSymbol()!.name + '#' + methodDecl.name.getText();
     }
 
     /**
@@ -134,20 +123,25 @@ class Walker extends Lint.AbstractWalker<undefined> {
         return child;
     }
 
-    private checkBaseTypesOverrides(base: ts.BaseType[] | undefined, node: ts.MethodDeclaration)
-            : ts.BaseType | undefined {
-        if (base === undefined) {
-            return undefined;
+    private checkHeritageChain(declaration: ts.ClassDeclaration | ts.ClassExpression, node: ts.MethodDeclaration)
+            : ts.Type | undefined {
+
+        const currentDeclaration = declaration; // this.findClassDeclarationInDeclaration(declaration, node);
+        if (currentDeclaration === undefined) {
+            return;
         }
-        for (const type of base) {
-            for (const symb of type.getProperties()) {
-                if (symb.name === node.name.getText()) {
-                    return type;
+        const clauses = currentDeclaration.heritageClauses;
+        if (clauses === undefined) {
+            return;
+        }
+        for (const clause of clauses) {
+            for (const typeNode of clause.types) {
+                const type = this.checker.getTypeAtLocation(typeNode);
+                for (const symb of type.getProperties()) {
+                    if (symb.name === node.name.getText()) {
+                        return type;
+                    }
                 }
-            }
-            const rec = this.checkBaseTypesOverrides(type.getBaseTypes(), node);
-            if (rec !== undefined) {
-                return rec;
             }
         }
         return undefined;
