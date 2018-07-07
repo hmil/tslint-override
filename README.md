@@ -29,7 +29,9 @@ Then, in your `tslint.json`, extend the tslint-override configuration.
 }
 ```
 
-This rule **requires type information**, which means that errors will not show in VSCode (see [vscode-tslint#70](https://github.com/Microsoft/vscode-tslint/issues/70) ). It will work out of the box when running `tslint` however.
+### IDE support
+
+This rule *requires type information*. If you are still using [vscode-tslint](https://github.com/Microsoft/vscode-tslint) you should switch over to using the [tslint-language-service](https://github.com/angelozerr/tslint-language-service) because vscode-tslint won't show the errors reported by tslint-override.
 
 ## What
 

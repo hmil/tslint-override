@@ -3,6 +3,9 @@
         "strict": true,
         "lib": [
             "es2015"
+        ],
+        "plugins": [
+            { "name": "tslint-language-service"}
         ]
     },
     "include": [
