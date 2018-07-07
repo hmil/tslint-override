@@ -1,5 +1,5 @@
 {
-    "extends": "../../tslint-override.json",
+    "extends": "../tslint-override.json",
     "rules": {
         "override-jsdoc-tag": true
     }

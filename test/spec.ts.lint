@@ -1,0 +1,31 @@
+abstract class ABase {
+
+}
+
+class Base extends ABase {
+    public methodToOverride(): void { }
+    public methodNotToOverride(): void { } 
+}
+
+class Example1 extends Base {
+    /**
+     * Multiline doc comment
+     @Override
+     ~~~~~~~~~ [Syntax error: 'Override' should be 'override' (case sensitive)]
+     */
+    /**
+      Second multi doc comment
+      @override
+       ~~~~~~~~ [@override jsdoc tag already specified]
+    **/
+    public methodToOverride(): void { }
+    
+    /**
+     * @override
+     */
+    public mehtodToOverride(): void { }
+           ~~~~~~~~~~~~~~~~            [Method with @override keyword does not override any base class method]
+
+    public methodNotToOverride(): void { }
+           ~~~~~~~~~~~~~~~~~~~         [Method Example1#methodNotToOverride is overriding Base#methodNotToOverride. Use the @override JSDoc tag if the override is intended]
+}

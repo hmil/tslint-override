@@ -1,9 +1,6 @@
 import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
-const OPTION_SUFFICIENT = 'sufficient';
-const OPTION_NECESSARY = 'necessary';
-
 export class Rule extends Lint.Rules.TypedRule {
     public static metadata: Lint.IRuleMetadata = {
         ruleName: 'override-jsdoc-tag',
@@ -14,23 +11,10 @@ export class Rule extends Lint.Rules.TypedRule {
         `,
         rationale: 'Catches a class of errors that TypeScript can not catch.',
         optionsDescription: Lint.Utils.dedent`
-            You can limit the scope of the rule by using one of:
-            * \`${OPTION_SUFFICIENT}\`: a method with the @override keyword must override something
-            * \`${OPTION_NECESSARY}\`: a method can only override something if it has the @override keyword
+            This rule does not take options
         `,
         options: {
-            type: 'array',
-            minItems: 0,
-            maxItems: 2,
-            items: {
-                type: 'string',
-                enum: [OPTION_NECESSARY, OPTION_SUFFICIENT],
-            },
         },
-        optionExamples: [
-            true,
-            [true, OPTION_SUFFICIENT],
-        ],
         type: 'typescript',
         typescriptOnly: true,
     };
@@ -40,10 +24,7 @@ export class Rule extends Lint.Rules.TypedRule {
         const args = this.ruleArguments;
         const enableAllChecks = args.length === 0;
         return this.applyWithWalker(
-            new Walker(sourceFile, this.ruleName, {
-                necessary: enableAllChecks || hasArg(OPTION_NECESSARY),
-                sufficient: enableAllChecks || hasArg(OPTION_SUFFICIENT),
-            }, program.getTypeChecker()));
+            new Walker(sourceFile, this.ruleName, undefined, program.getTypeChecker()));
 
         function hasArg(name: string): boolean {
             return args.indexOf(name) !== -1;
@@ -54,13 +35,13 @@ export class Rule extends Lint.Rules.TypedRule {
 const OVERRIDE_TAG_RX_MATCHER = /^overr?ides?$/i;
 const OVERRIDE_TAG_EXACT_SYNTAX = 'override';
 
-class Walker extends Lint.AbstractWalker<string[]> {
+class Walker extends Lint.AbstractWalker<undefined> {
     constructor(
             sourceFile: ts.SourceFile,
             ruleName: string,
-            private readonly config: { sufficient: boolean, necessary: boolean },
+            private readonly config: undefined,
             private readonly checker: ts.TypeChecker) {
-        super(sourceFile, ruleName, []);
+        super(sourceFile, ruleName, undefined);
     }
 
     /** @override */
@@ -92,12 +73,12 @@ class Walker extends Lint.AbstractWalker<string[]> {
         if (!parentType.isClass) {
             return undefined;
         }
-        if (this.config.sufficient && foundTag !== undefined) {
+        if (foundTag !== undefined) {
             if (!this.checkBaseTypesOverrides(parentType.getBaseTypes(), node)) {
                 this.addFailureAtNode(node.name, `Method with @override keyword does not override any base class method`,
                     Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
             }
-        } else if (this.config.necessary && foundTag === undefined) {
+        } else if (foundTag === undefined) {
             const base = this.checkBaseTypesOverrides(parentType.getBaseTypes(), node);
             if (base !== undefined) {
                 const fix = this.fixAddOverrideKeyword(node);
