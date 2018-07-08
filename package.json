@@ -9,7 +9,7 @@
         "tslint": "tslint",
         "build": "npm run clean && tsc -p .",
         "clean": "rm -f rules/*.js",
-        "release": "ts-node release.sh.ts"
+        "release": "ts-node resources/release.sh.ts"
     },
     "repository": {
         "type": "git",
