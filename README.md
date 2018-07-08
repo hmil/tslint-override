@@ -5,6 +5,8 @@ Finally brings support for the `override` keyword to TypeScript!
 
 [![Build Status](https://travis-ci.org/hmil/tslint-override.svg?branch=master)](https://travis-ci.org/hmil/tslint-override)
 
+[!preview](https://github.com/hmil/tslint-override/blob/master/resources/story.gif?raw=true)
+
 ## Why
 
 Most modern object oriented languages provide an `override` keyword to prevent misuse of the override mechanism. However, support for the `override` keyword in typescript [is nowhere in sight](https://github.com/Microsoft/TypeScript/issues/2000), and in the meantime, TypeScript programmers are left with no ideal solution to this problem.
@@ -29,7 +31,7 @@ Then, in your `tslint.json`, extend the tslint-override configuration.
 }
 ```
 
-### IDE support
+### IDE support
 
 This rule *requires type information*. If you are still using [vscode-tslint](https://github.com/Microsoft/vscode-tslint) you should switch over to using the [tslint-language-service](https://github.com/angelozerr/tslint-language-service) because vscode-tslint won't show the errors reported by tslint-override.
 
@@ -38,30 +40,20 @@ This rule *requires type information*. If you are still using [vscode-tslint](ht
 ```typescript
 export class Basic {
 
-    public overridePlease(): void {
-        /* empty */
-    }
+    public overridePlease(): void { }
 
-    public doNotOverride(): void {
-        /* empty */
-    }
+    public doNotOverride(): void { }
 }
 
 export class Child extends Basic {
 
     /** @override */
-    public overridePlease(): void {
-        /* empty */
-    }
+    public overridePlease(): void { }
 
     /** @override */
-    public overidePlease(): void { // ERROR: Method with @override tag is not overriding anything
-        /* empty */
-    }
+    public overidePlease(): void { } // ERROR: Method with @override tag is not overriding anything
 
-    public doNotOverride(): void { // ERROR: Method Child#doNotOverride is overriding Basic#doNotOverride. Use the @override JSDoc tag if the override is intended
-        /* empty */
-    }
+    public doNotOverride(): void { } // ERROR: Method Child#doNotOverride is overriding Basic#doNotOverride. Use the @override JSDoc tag if the override is intended
 }
 ```
 
