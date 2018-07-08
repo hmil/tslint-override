@@ -1,6 +1,6 @@
 #!/bin/sh -xe
 
-FIX_TEST_DIR="./fixes/"
+FIX_TEST_DIR="test/fixes"
 
 cp "${FIX_TEST_DIR}/spec.bad.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
 
