@@ -1,6 +1,19 @@
 import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
+type OverridableElement =
+        ts.MethodDeclaration |
+        ts.PropertyDeclaration |
+        ts.GetAccessorDeclaration |
+        ts.SetAccessorDeclaration;
+
+function isOverridableElement(el: ts.Node): el is OverridableElement {
+    return  ts.isMethodDeclaration(el) ||
+            ts.isPropertyDeclaration(el) ||
+            ts.isGetAccessorDeclaration(el) ||
+            ts.isSetAccessorDeclaration(el);
+}
+
 export class Rule extends Lint.Rules.TypedRule {
     public static metadata: Lint.IRuleMetadata = {
         ruleName: 'override-jsdoc-tag',
@@ -47,8 +60,8 @@ class Walker extends Lint.AbstractWalker<undefined> {
     /** @override */
     public walk(sourceFile: ts.SourceFile) {
         const cb = (node: ts.Node): void => {
-            if (node.kind === ts.SyntaxKind.MethodDeclaration) {
-                this.checkMethodDeclaration(node as ts.MethodDeclaration);
+            if (isOverridableElement(node)) {
+                this.checkElementDeclaration(node);
             }
             return ts.forEachChild(node, cb);
         };
@@ -56,36 +69,29 @@ class Walker extends Lint.AbstractWalker<undefined> {
         return ts.forEachChild(sourceFile, cb);
     }
 
-    private checkMethodDeclaration(node: ts.MethodDeclaration) {
+    private checkElementDeclaration(node: OverridableElement) {
         const jsDoc = node.getChildren().filter(ts.isJSDoc);
         const foundTag = this.checkJSDocAndFindOverrideTag(jsDoc);
-
-        const type = this.checker.getTypeAtLocation(node);
-        const symbol = type.getSymbol();
-        if (symbol == null) {
-            return;
-        }
 
         const parent = node.parent;
         if (parent == null || !isClassType(parent)) {
             return;
         }
-
         const base = this.checkHeritageChain(parent, node);
 
         if (foundTag !== undefined && base === undefined) {
-            this.addFailureAtNode(node.name, 'Method with @override keyword does not override any base class method',
+            this.addFailureAtNode(node.name, 'Member with @override keyword does not override any base class member',
             Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
         } else if (foundTag === undefined && base !== undefined) {
             const fix = this.fixAddOverrideKeyword(node);
             this.addFailureAtNode(node.name,
-                    'Method is overriding a base method. Use the @override JSDoc tag if the override is intended',
+                    'Member is overriding a base member. Use the @override JSDoc tag if the override is intended',
                     fix,
                 );
         }
     }
 
-    private fixAddOverrideKeyword(node: ts.MethodDeclaration) {
+    private fixAddOverrideKeyword(node: OverridableElement) {
         return Lint.Replacement.appendText(node.getStart(), '/** @override */ ');
     }
 
@@ -123,10 +129,10 @@ class Walker extends Lint.AbstractWalker<undefined> {
         return child;
     }
 
-    private checkHeritageChain(declaration: ts.ClassDeclaration | ts.ClassExpression, node: ts.MethodDeclaration)
+    private checkHeritageChain(declaration: ts.ClassDeclaration | ts.ClassExpression, node: OverridableElement)
             : ts.Type | undefined {
 
-        const currentDeclaration = declaration; // this.findClassDeclarationInDeclaration(declaration, node);
+        const currentDeclaration = declaration;
         if (currentDeclaration === undefined) {
             return;
         }

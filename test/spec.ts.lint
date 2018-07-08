@@ -1,14 +1,32 @@
 abstract class ABase {
+    public get aGetterToOverride() { return 1; }
+    public get aGetterNotToOverride() { return 1; }
+    public get aSetterToOverride() { return 1; }
+    public get aSetterNotToOverride() { return 1; }
+    public aPropertyToOverride = 1;
+    public aPropertyNotToOverride = 1;
     public aMethodToOverride(): void { }
     public aMethodNotToOverride(): void { }
 }
 
 class Base extends ABase {
+    public get getterToOverride() { return 1; }
+    public get getterNotToOverride() { return 1; }
+    public get setterToOverride() { return 1; }
+    public get setterNotToOverride() { return 1; }
+    public propertyToOverride = 1;
+    public propertyNotToOverride = 1;
     public methodToOverride(): void { }
     public methodNotToOverride(): void { }
 }
 
 const DynBase = class extends ABase {
+    public get getterToOverride() { return 1; }
+    public get getterNotToOverride() { return 1; }
+    public get setterToOverride() { return 1; }
+    public get setterNotToOverride() { return 1; }
+    public propertyToOverride = 1;
+    public propertyNotToOverride = 1;
     public methodToOverride(): void { }
     public methodNotToOverride(): void { }
 }
@@ -17,84 +35,165 @@ class Intermediary extends DynBase {
 }
 
 class Example1 extends Base {
+
+    /** @override */ public get getterToOverride() { return 1; }
+
+    public get getterNotToOverride() { return 1; }
+               ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    /** @override */ public get setterToOverride() { return 1; }
+
+    public get setterNotToOverride() { return 1; }
+               ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    /** @override */ public propertyToOverride = 2;
+
+    public propertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */ public aPropertyToOverride = 2;
+
+    public aPropertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
     /**
      * Multiline doc comment
-     @Override
-     ~~~~~~~~~ [Syntax error: 'Override' should be 'override' (case sensitive)]
+     * @Override
+       ~~~~~~~~~ [Syntax error: 'Override' should be 'override' (case sensitive)]
      */
     /**
-      Second multi doc comment
-      @override
-       ~~~~~~~~ [@override jsdoc tag already specified]
-    **/
+     * Second multi doc comment
+     * @override
+        ~~~~~~~~ [@override jsdoc tag already specified]
+     */
     public methodToOverride(): void { }
 
-    /**
-     * @override
-     */
-    public mehtodToOverride(): void { }
-           ~~~~~~~~~~~~~~~~            [Method with @override keyword does not override any base class method]
+    /** @override */ public mehtodToOverride(): void { }
+                            ~~~~~~~~~~~~~~~~            [Member with @override keyword does not override any base class member]
 
     public methodNotToOverride(): void { }
-           ~~~~~~~~~~~~~~~~~~~         [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+           ~~~~~~~~~~~~~~~~~~~         [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
-    /** @override */
-    public aMethodToOverride(): void { }
+    /** @override */ public aMethodToOverride(): void { }
 
     public aMethodNotToOverride(): void { }
-           ~~~~~~~~~~~~~~~~~~~~        [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+           ~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 }
 
 const Example2 = class extends Base {
-    /** @override **/
-    public methodToOverride(): void { }
+
+    /** @override */ public get getterToOverride() { return 1; }
+
+    public get getterNotToOverride() { return 1; }
+               ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    /** @override */ public get setterToOverride() { return 1; }
+
+    public get setterNotToOverride() { return 1; }
+               ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    /** @override */ public propertyToOverride = 2;
+
+    public propertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */ public propertyToOverride = 2;
+
+    public propertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */ public aPropertyToOverride = 2;
+
+    public aPropertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */ public methodToOverride(): void { }
 
     /** @override */
     public mehtodToOverride(): void { }
-           ~~~~~~~~~~~~~~~~            [Method with @override keyword does not override any base class method]
+           ~~~~~~~~~~~~~~~~            [Member with @override keyword does not override any base class member]
 
     public methodNotToOverride(): void { }
-           ~~~~~~~~~~~~~~~~~~~         [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+           ~~~~~~~~~~~~~~~~~~~         [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
-    /** @override */
-    public aMethodToOverride(): void { }
+    /** @override */ public aMethodToOverride(): void { }
 
     public aMethodNotToOverride(): void { }
-           ~~~~~~~~~~~~~~~~~~~~        [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+           ~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 }
 
 class Example3 extends DynBase {
-    /** @override **/
-    public methodToOverride(): void { }
+
+    /** @override */ public get getterToOverride() { return 1; }
+
+    public get getterNotToOverride() { return 1; }
+               ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    /** @override */ public get setterToOverride() { return 1; }
+
+    public get setterNotToOverride() { return 1; }
+               ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    /** @override */ public propertyToOverride = 2;
+
+    public propertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */ public propertyToOverride = 2;
+
+    public propertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */ public aPropertyToOverride = 2;
+
+    public aPropertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */ public methodToOverride(): void { }
 
     /** @override */
     public mehtodToOverride(): void { }
-           ~~~~~~~~~~~~~~~~            [Method with @override keyword does not override any base class method]
+           ~~~~~~~~~~~~~~~~            [Member with @override keyword does not override any base class member]
 
     public methodNotToOverride(): void { }
-           ~~~~~~~~~~~~~~~~~~~         [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+           ~~~~~~~~~~~~~~~~~~~         [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
-    /** @override */
-    public aMethodToOverride(): void { }
+    /** @override */ public aMethodToOverride(): void { }
 
     public aMethodNotToOverride(): void { }
-           ~~~~~~~~~~~~~~~~~~~~        [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+           ~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 }
 
 class Example4 extends Intermediary {
-    /** @override **/
-    public methodToOverride(): void { }
+
+    /** @override */ public get getterToOverride() { return 1; }
+
+    public get getterNotToOverride() { return 1; }
+               ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    /** @override */ public get setterToOverride() { return 1; }
+
+    public get setterNotToOverride() { return 1; }
+               ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    /** @override */ public propertyToOverride = 2;
+
+    public propertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */ public propertyToOverride = 2;
+
+    public propertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */ public aPropertyToOverride = 2;
+
+    public aPropertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /** @override */ public methodToOverride(): void { }
 
     /** @override */
     public mehtodToOverride(): void { }
-           ~~~~~~~~~~~~~~~~            [Method with @override keyword does not override any base class method]
+           ~~~~~~~~~~~~~~~~            [Member with @override keyword does not override any base class member]
 
     public methodNotToOverride(): void { }
-           ~~~~~~~~~~~~~~~~~~~         [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+           ~~~~~~~~~~~~~~~~~~~         [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
-    /** @override */
-    public aMethodToOverride(): void { }
+    /** @override */ public aMethodToOverride(): void { }
 
     public aMethodNotToOverride(): void { }
-           ~~~~~~~~~~~~~~~~~~~~        [Method is overriding a base method. Use the @override JSDoc tag if the override is intended]
+           ~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 }
