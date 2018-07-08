@@ -5,11 +5,11 @@ Finally brings support for the `override` keyword to TypeScript!
 
 [![Build Status](https://travis-ci.org/hmil/tslint-override.svg?branch=master)](https://travis-ci.org/hmil/tslint-override)
 
-[!preview](https://github.com/hmil/tslint-override/blob/master/resources/story.gif?raw=true)
+![preview](https://github.com/hmil/tslint-override/blob/master/resources/story.gif?raw=true)
 
 ## Why
 
-Most modern object oriented languages provide an `override` keyword to prevent misuse of the override mechanism. However, support for the `override` keyword in typescript [is nowhere in sight](https://github.com/Microsoft/TypeScript/issues/2000), and in the meantime, TypeScript programmers are left with no ideal solution to this problem.
+Most modern object oriented languages provide an `override` keyword to prevent misuse of the override mechanism. However, support for the `override` keyword in TypeScript [is nowhere in sight](https://github.com/Microsoft/TypeScript/issues/2000), and in the meantime, TypeScript programmers are left with no ideal solution to this problem.
 
 Here are some reasons to use this rule:
 - You may want to override a method, but introduce a typo in the method name and end up creating a new method by accident.
