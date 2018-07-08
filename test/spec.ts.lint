@@ -1,4 +1,6 @@
 abstract class ABase {
+    public static staticBase = 'np';
+    public staticChild = 'np';
     public get aGetterToOverride() { return 1; }
     public get aGetterNotToOverride() { return 1; }
     public get aSetterToOverride() { return 1; }
@@ -53,6 +55,11 @@ class Example1 extends Base {
 
     public aPropertyNotToOverride = 2;
            ~~~~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+
+    public staticBase = 'np';
+
+    public static staticChild = 'np';
 
     /**
      * Multiline doc comment

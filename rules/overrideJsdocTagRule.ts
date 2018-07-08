@@ -8,10 +8,14 @@ type OverridableElement =
         ts.SetAccessorDeclaration;
 
 function isOverridableElement(el: ts.Node): el is OverridableElement {
-    return  ts.isMethodDeclaration(el) ||
+    return (
+            ts.isMethodDeclaration(el) ||
             ts.isPropertyDeclaration(el) ||
             ts.isGetAccessorDeclaration(el) ||
-            ts.isSetAccessorDeclaration(el);
+            ts.isSetAccessorDeclaration(el)
+        ) && (
+            (ts.getCombinedModifierFlags(el) & ts.ModifierFlags.Static) === 0
+        );
 }
 
 export class Rule extends Lint.Rules.TypedRule {
@@ -34,14 +38,8 @@ export class Rule extends Lint.Rules.TypedRule {
 
     /** @override */
     public applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): Lint.RuleFailure[] {
-        const args = this.ruleArguments;
-        const enableAllChecks = args.length === 0;
         return this.applyWithWalker(
             new Walker(sourceFile, this.ruleName, undefined, program.getTypeChecker()));
-
-        function hasArg(name: string): boolean {
-            return args.indexOf(name) !== -1;
-        }
     }
 }
 
@@ -52,7 +50,7 @@ class Walker extends Lint.AbstractWalker<undefined> {
     constructor(
             sourceFile: ts.SourceFile,
             ruleName: string,
-            private readonly config: undefined,
+            _config: undefined,
             private readonly checker: ts.TypeChecker) {
         super(sourceFile, ruleName, undefined);
     }
