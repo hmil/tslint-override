@@ -17,17 +17,15 @@ export class Baz extends Foo {
      */
     /**
       Second multi doc comment
-      @override
-    **/
+      **/
     public bar(): void { }
 
     /**
-     * @override
+     * 
      */
     public baz(): void { }
 
-    public notToOverride(): void { }
+    /** @override */ public notToOverride(): void { }
 
-    @override
     @override public bar(): void { }
 }

@@ -8,7 +8,7 @@
         "lint": "tslint -p .",
         "tslint": "tslint",
         "build": "npm run clean && tsc -p .",
-        "clean": "rm -f rules/*.js",
+        "clean": "rm -f rules/*.js rules/*.d.ts *.js *.d.ts",
         "release": "ts-node resources/release.sh.ts"
     },
     "repository": {

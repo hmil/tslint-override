@@ -10,20 +10,23 @@ class Foo extends First {
     public notToOverride(): void { } 
 }
 
-export class Baz extends Foo{
+export class Baz extends Foo {
     /**
      * Multiline doc comment
      @override
      */
     /**
       Second multi doc comment
-      **/
-    public bar(): void { }
+      @override
+    **/
+    @override public bar(): void { }
 
     /**
-     * 
+     * @override
      */
     public baz(): void { }
 
-    /** @override */ public notToOverride(): void { }
+    @override public notToOverride(): void { }
+
+    @override public bar(): void { }
 }

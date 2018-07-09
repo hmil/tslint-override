@@ -109,14 +109,14 @@ class Walker extends Lint.AbstractWalker<IOptions> {
                     this.checkOverrideableElementDeclaration(element);
                     break;
             default:
-                this.checkNonOverrideableDeclaration(element);
+                this.checkNonOverrideableElementDeclaration(element);
         }
     }
 
-    private checkNonOverrideableDeclaration(node: AllClassElements) {
+    private checkNonOverrideableElementDeclaration(node: AllClassElements) {
         const foundKeyword = this.checkNodeForOverrideKeyword(node);
         if (foundKeyword !== undefined) {
-            this.addFailureAtNode(foundKeyword, 'Extraneous override tag',
+            this.addFailureAtNode(foundKeyword, 'Extraneous override keyword',
                     Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
         }
     }
@@ -124,7 +124,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     private checkConstructorDeclaration(node: ts.ConstructorDeclaration) {
         const foundKeyword = this.checkNodeForOverrideKeyword(node);
         if (foundKeyword !== undefined) {
-            this.addFailureAtNode(foundKeyword, 'Extraneous override tag: constructors always override the parent',
+            this.addFailureAtNode(foundKeyword, 'Extraneous override keyword: constructors always override the parent',
                     Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
         }
     }
@@ -134,7 +134,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
 
         if (isStaticMember(node)) {
             if (foundKeyword !== undefined) {
-                this.addFailureAtNode(foundKeyword, 'Extraneous override tag: static members cannot override',
+                this.addFailureAtNode(foundKeyword, 'Extraneous override keyword: static members cannot override',
                         Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
             }
             return;
@@ -152,14 +152,18 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         } else if (foundKeyword === undefined && base !== undefined) {
             const fix = this.fixAddOverrideKeyword(node);
             this.addFailureAtNode(node.name,
-                    'Member is overriding a base member. Use the @override JSDoc tag if the override is intended',
+                    'Member is overriding a base member. Use the @override keyword if this override is intended',
                     fix,
                 );
         }
     }
 
     private fixAddOverrideKeyword(node: AllClassElements) {
-        return Lint.Replacement.appendText(node.getStart(), '/** @override */ ');
+        const fixer = this._options.useJsdocTag ?
+            '/** @override */ ' :
+            '@override ';
+
+        return Lint.Replacement.appendText(node.getStart(), fixer);
     }
 
     private checkNodeForOverrideKeyword(node: AllClassElements) {
