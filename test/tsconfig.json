@@ -1,5 +1,17 @@
 {
-    "compilerOptions": {
-      "target": "es2015"
-    }
-  }
+  "compilerOptions": {
+    "target": "es2015",
+    "experimentalDecorators": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "lib": [
+        "es2015", "dom"
+    ],
+    "plugins": [
+        { "name": "tslint-language-service" }
+    ]
+  },
+  "include": [
+      "test.ts"
+  ]
+}

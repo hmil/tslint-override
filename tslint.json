@@ -10,6 +10,7 @@
         "max-line-length": [ true, 140 ],
         "quotemark": [ true, "single" ],
         "variable-name": [ true, "allow-leading-underscore" ],
-        "no-bitwise": false
+        "no-bitwise": false,
+        "interface-name": false
     }
 }

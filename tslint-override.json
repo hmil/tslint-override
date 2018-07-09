@@ -1,6 +1,6 @@
 {
     "rulesDirectory":  "./rules",
     "rules": {
-        "override-jsdoc-tag": [ true ]
+        "explicit-override": true
     }
 }

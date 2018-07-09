@@ -15,8 +15,20 @@ type OverrideableElement =
         ts.GetAccessorDeclaration |
         ts.SetAccessorDeclaration;
 
+type OverrideKeyword =
+        ts.Decorator |
+        ts.JSDocTag;
+
 function isSomeClassElement(el: ts.Node): el is AllClassElements {
     return ts.isClassElement(el);
+}
+
+const OPTION_DECORATOR = 'decorator';
+const OPTION_JSDOC_TAG = 'jsdoc';
+
+interface IOptions {
+    useJsdocTag: boolean;
+    useDecorator: boolean;
 }
 
 export class Rule extends Lint.Rules.TypedRule {
@@ -29,32 +41,48 @@ export class Rule extends Lint.Rules.TypedRule {
         `,
         rationale: 'Catches a class of errors that TypeScript can not catch.',
         optionsDescription: Lint.Utils.dedent`
-            This rule does not take options
+            The following options can be used and combined. By default, both are enabled.
+
+            * \`"${OPTION_DECORATOR}"\` Uses a decorator: \`@override method() { }\`
+            * \`"${OPTION_JSDOC_TAG}"\` (default) Uses a jsdoc tag: \`/** @override */ method() { }\`
         `,
         options: {
+            type: 'array',
+            items: {
+                type: 'string',
+                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG],
+            },
+            minLength: 1,
+            maxLength: 2,
         },
+        optionExamples: [[true, OPTION_DECORATOR]],
         type: 'typescript',
         typescriptOnly: true,
     };
 
     /** @override */
     public applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): Lint.RuleFailure[] {
+        const hasJsDocParameter = this.ruleArguments.indexOf(OPTION_JSDOC_TAG) !== -1;
+        const hasDecoratorParameter = this.ruleArguments.indexOf(OPTION_DECORATOR) !== -1;
         return this.applyWithWalker(
-            new Walker(sourceFile, this.ruleName, undefined, program.getTypeChecker()));
+            new Walker(sourceFile, this.ruleName, {
+                useDecorator: hasDecoratorParameter || !hasJsDocParameter,
+                useJsdocTag: hasJsDocParameter || !hasDecoratorParameter
+            }, program.getTypeChecker()));
     }
 }
 
-const OVERRIDE_TAG_RX_MATCHER = /^overr?ides?$/i;
-const OVERRIDE_TAG_EXACT_SYNTAX = 'override';
+const OVERRIDE_KEYWORD = 'override';
+const OVERRIDE_DECORATOR_MATCHER = /^@[oO]verride(\(\s*\))?$/;
 
-class Walker extends Lint.AbstractWalker<undefined> {
+class Walker extends Lint.AbstractWalker<IOptions> {
 
     constructor(
             sourceFile: ts.SourceFile,
             ruleName: string,
-            _config: undefined,
+            private readonly _options: IOptions,
             private readonly checker: ts.TypeChecker) {
-        super(sourceFile, ruleName, undefined);
+        super(sourceFile, ruleName, _options);
     }
 
     /** @override */
@@ -86,31 +114,28 @@ class Walker extends Lint.AbstractWalker<undefined> {
     }
 
     private checkNonOverrideableDeclaration(node: AllClassElements) {
-        const jsDoc = node.getChildren().filter(ts.isJSDoc);
-        const foundTag = this.checkJSDocAndFindOverrideTag(jsDoc);
-        if (foundTag !== undefined) {
-            this.addFailureAtNode(foundTag, 'Extraneous override tag',
-                    Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
+        const foundKeyword = this.checkNodeForOverrideKeyword(node);
+        if (foundKeyword !== undefined) {
+            this.addFailureAtNode(foundKeyword, 'Extraneous override tag',
+                    Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
         }
     }
 
     private checkConstructorDeclaration(node: ts.ConstructorDeclaration) {
-        const jsDoc = node.getChildren().filter(ts.isJSDoc);
-        const foundTag = this.checkJSDocAndFindOverrideTag(jsDoc);
-        if (foundTag !== undefined) {
-            this.addFailureAtNode(foundTag, 'Extraneous override tag: constructors always override the parent',
-                    Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
+        const foundKeyword = this.checkNodeForOverrideKeyword(node);
+        if (foundKeyword !== undefined) {
+            this.addFailureAtNode(foundKeyword, 'Extraneous override tag: constructors always override the parent',
+                    Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
         }
     }
 
     private checkOverrideableElementDeclaration(node: OverrideableElement) {
-        const jsDoc = node.getChildren().filter(ts.isJSDoc);
-        const foundTag = this.checkJSDocAndFindOverrideTag(jsDoc);
+        const foundKeyword = this.checkNodeForOverrideKeyword(node);
 
         if (isStaticMember(node)) {
-            if (foundTag !== undefined) {
-                this.addFailureAtNode(foundTag, 'Extraneous override tag: static members cannot override',
-                        Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
+            if (foundKeyword !== undefined) {
+                this.addFailureAtNode(foundKeyword, 'Extraneous override tag: static members cannot override',
+                        Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
             }
             return;
         }
@@ -121,10 +146,10 @@ class Walker extends Lint.AbstractWalker<undefined> {
         }
         const base = this.checkHeritageChain(parent, node);
 
-        if (foundTag !== undefined && base === undefined) {
+        if (foundKeyword !== undefined && base === undefined) {
             this.addFailureAtNode(node.name, 'Member with @override keyword does not override any base class member',
-            Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
-        } else if (foundTag === undefined && base !== undefined) {
+            Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
+        } else if (foundKeyword === undefined && base !== undefined) {
             const fix = this.fixAddOverrideKeyword(node);
             this.addFailureAtNode(node.name,
                     'Member is overriding a base member. Use the @override JSDoc tag if the override is intended',
@@ -135,6 +160,50 @@ class Walker extends Lint.AbstractWalker<undefined> {
 
     private fixAddOverrideKeyword(node: AllClassElements) {
         return Lint.Replacement.appendText(node.getStart(), '/** @override */ ');
+    }
+
+    private checkNodeForOverrideKeyword(node: AllClassElements) {
+        const matches: OverrideKeyword[] = [];
+        if (this._options.useJsdocTag) {
+            const jsDoc = node.getChildren().filter(ts.isJSDoc);
+            const foundTag = this.checkJSDocAndFindOverrideTag(jsDoc);
+            if (foundTag != null) {
+                matches.push(foundTag);
+            }
+        }
+        if (this._options.useDecorator) {
+            const foundDecorator = this.checkNodeAndFindDecorator(node);
+            if (foundDecorator) {
+                matches.push(foundDecorator);
+            }
+        }
+        return matches[0];
+    }
+
+    private checkNodeAndFindDecorator(node: ts.ClassElement): ts.Decorator | undefined {
+        const decorators = node.decorators;
+        if (decorators == null) {
+            return;
+        }
+        let found: ts.Decorator | undefined;
+        for (const dec of decorators) {
+            const tmp = this.checkIndividualDecorator(dec, found !== undefined);
+            if (found === undefined) {
+                found = tmp;
+            }
+        }
+        return found;
+    }
+
+    private checkIndividualDecorator(dec: ts.Decorator, found: boolean) {
+        if (!OVERRIDE_DECORATOR_MATCHER.test(dec.getText())) {
+            return;
+        }
+        if (found) {
+            this.addFailureAtNode(dec, `@override decorator already specified`,
+                    Lint.Replacement.deleteFromTo(dec.pos, dec.end));
+        }
+        return dec;
     }
 
     /**
@@ -154,15 +223,8 @@ class Walker extends Lint.AbstractWalker<undefined> {
     }
 
     private checkJSDocChild(child: ts.Node, found: boolean): ts.JSDocTag | undefined {
-        if (!isJSDocTag(child) || !OVERRIDE_TAG_RX_MATCHER.test(child.tagName.text)) {
+        if (!isJSDocTag(child) || child.tagName.text !== OVERRIDE_KEYWORD) {
             return;
-        }
-        if (child.tagName.text !== OVERRIDE_TAG_EXACT_SYNTAX) {
-            const replacement = Lint.Replacement.replaceFromTo(
-                    child.tagName.pos, child.tagName.getEnd(), OVERRIDE_TAG_EXACT_SYNTAX);
-            this.addFailureAtNode(child,
-                    `Syntax error: '${child.tagName.text}' should be 'override' (case sensitive)`,
-                    replacement);
         }
         if (found) {
             this.addFailureAtNode(child.tagName, `@override jsdoc tag already specified`,

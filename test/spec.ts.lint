@@ -60,20 +60,18 @@ class Example1 extends Base {
     public static someStaticOverride = 'nope';
 
     /** @override */ public get getterToOverride() { return 1; }
-
     public get getterNotToOverride() { return 1; }
                ~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
-    /** @override */ public set setterToOverride(value: number) { }
 
+    /** @override */ public set setterToOverride(value: number) { }
     public set setterNotToOverride(value: number) { }
                ~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    
     /** @override */ public propertyToOverride = 2;
-
     public propertyNotToOverride = 2;
            ~~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
     /** @override */ public aPropertyToOverride = 2;
-
     public aPropertyNotToOverride = 2;
            ~~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
@@ -83,8 +81,7 @@ class Example1 extends Base {
 
     /**
      * Multiline doc comment
-     * @Override
-       ~~~~~~~~~ [Syntax error: 'Override' should be 'override' (case sensitive)]
+     * @override
      */
     /**
      * Second multi doc comment
@@ -95,12 +92,10 @@ class Example1 extends Base {
 
     /** @override */ public mehtodToOverride(): void { }
                             ~~~~~~~~~~~~~~~~            [Member with @override keyword does not override any base class member]
-
     public methodNotToOverride(): void { }
            ~~~~~~~~~~~~~~~~~~~         [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
     /** @override */ public aMethodToOverride(): void { }
-
     public aMethodNotToOverride(): void { }
            ~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 }
@@ -110,25 +105,18 @@ const Example2 = class extends Base {
     constructor() { }
 
     /** @override */ public get getterToOverride() { return 1; }
-
     public get getterNotToOverride() { return 1; }
                ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    
     /** @override */ public set setterToOverride(value: number) { }
-
     public set setterNotToOverride(value: number) { }
                ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    
     /** @override */ public propertyToOverride = 2;
-
-    public propertyNotToOverride = 2;
-           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
-
-    /** @override */ public propertyToOverride = 2;
-
     public propertyNotToOverride = 2;
            ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
     /** @override */ public aPropertyToOverride = 2;
-
     public aPropertyNotToOverride = 2;
            ~~~~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
@@ -142,7 +130,6 @@ const Example2 = class extends Base {
            ~~~~~~~~~~~~~~~~~~~         [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
     /** @override */ public aMethodToOverride(): void { }
-
     public aMethodNotToOverride(): void { }
            ~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 }
@@ -152,25 +139,18 @@ class Example3 extends DynBase {
     constructor() { }
 
     /** @override */ public get getterToOverride() { return 1; }
-
     public get getterNotToOverride() { return 1; }
                ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    
     /** @override */ public set setterToOverride(value: number) { }
-
     public set setterNotToOverride(value: number) { }
                ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    
     /** @override */ public propertyToOverride = 2;
-
-    public propertyNotToOverride = 2;
-           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
-
-    /** @override */ public propertyToOverride = 2;
-
     public propertyNotToOverride = 2;
            ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
     /** @override */ public aPropertyToOverride = 2;
-
     public aPropertyNotToOverride = 2;
            ~~~~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
@@ -184,7 +164,6 @@ class Example3 extends DynBase {
            ~~~~~~~~~~~~~~~~~~~         [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
     /** @override */ public aMethodToOverride(): void { }
-
     public aMethodNotToOverride(): void { }
            ~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 }
@@ -194,25 +173,18 @@ class Example4 extends Intermediary {
     constructor() { }
 
     /** @override */ public get getterToOverride() { return 1; }
-
     public get getterNotToOverride() { return 1; }
                ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    
     /** @override */ public set setterToOverride(value: number) { }
-
     public set setterNotToOverride(value: number) { }
                ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    
     /** @override */ public propertyToOverride = 2;
-
-    public propertyNotToOverride = 2;
-           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
-
-    /** @override */ public propertyToOverride = 2;
-
     public propertyNotToOverride = 2;
            ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
     /** @override */ public aPropertyToOverride = 2;
-
     public aPropertyNotToOverride = 2;
            ~~~~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
@@ -226,7 +198,54 @@ class Example4 extends Intermediary {
            ~~~~~~~~~~~~~~~~~~~         [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 
     /** @override */ public aMethodToOverride(): void { }
+    public aMethodNotToOverride(): void { }
+           ~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+}
 
+class TagTest extends Base {
+
+    @override
+    ~~~~~~~~~                       [Extraneous override tag: constructors always override the parent]
+    constructor() { }
+
+    @override
+    ~~~~~~~~~                       [Extraneous override tag: static members cannot override]
+    public static someStaticOverride = 'nope';
+
+    constructor() { }
+
+    @override public get getterToOverride() { return 1; }
+    public get getterNotToOverride() { return 1; }
+               ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    
+    @override public set setterToOverride(value: number) { }
+    public set setterNotToOverride(value: number) { }
+               ~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+    
+    @override public propertyToOverride = 2;
+    public propertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~       [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    @override public aPropertyToOverride = 2;
+    public aPropertyNotToOverride = 2;
+           ~~~~~~~~~~~~~~~~~~~~~~      [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    /**
+     * Some funky method
+     * @override
+     */
+    @override
+    public methodToOverride(): void { }
+
+    @override
+    @override public mehtodToOverride(): void { }
+    ~~~~~~~~~                                    [@override decorator already specified]
+                     ~~~~~~~~~~~~~~~~            [Member with @override keyword does not override any base class member]
+
+    public methodNotToOverride(): void { }
+           ~~~~~~~~~~~~~~~~~~~         [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
+
+    @override public aMethodToOverride(): void { }
     public aMethodNotToOverride(): void { }
            ~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override JSDoc tag if the override is intended]
 }

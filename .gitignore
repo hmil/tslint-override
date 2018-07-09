@@ -1,3 +1,6 @@
 node_modules
 rules/*.js
-spec.bad.tofix.ts
+rules/*.d.ts
+test/fixes/spec.bad.tofix.ts
+*.js
+*.d.ts
