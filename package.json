@@ -32,7 +32,8 @@
     "files": [
         "rules/*.js",
         "tslint-override.json",
-        "register.js"
+        "register.js",
+        "register.d.ts"
     ],
     "homepage": "https://github.com/hmil/tslint-override#readme",
     "devDependencies": {
