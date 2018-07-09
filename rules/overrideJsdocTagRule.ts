@@ -1,21 +1,22 @@
 import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
-type OverridableElement =
+type AllClassElements =
+        ts.MethodDeclaration |
+        ts.PropertyDeclaration |
+        ts.GetAccessorDeclaration |
+        ts.SetAccessorDeclaration |
+        ts.IndexSignatureDeclaration |
+        ts.ConstructorDeclaration;
+
+type OverrideableElement =
         ts.MethodDeclaration |
         ts.PropertyDeclaration |
         ts.GetAccessorDeclaration |
         ts.SetAccessorDeclaration;
 
-function isOverridableElement(el: ts.Node): el is OverridableElement {
-    return (
-            ts.isMethodDeclaration(el) ||
-            ts.isPropertyDeclaration(el) ||
-            ts.isGetAccessorDeclaration(el) ||
-            ts.isSetAccessorDeclaration(el)
-        ) && (
-            (ts.getCombinedModifierFlags(el) & ts.ModifierFlags.Static) === 0
-        );
+function isSomeClassElement(el: ts.Node): el is AllClassElements {
+    return ts.isClassElement(el);
 }
 
 export class Rule extends Lint.Rules.TypedRule {
@@ -47,6 +48,7 @@ const OVERRIDE_TAG_RX_MATCHER = /^overr?ides?$/i;
 const OVERRIDE_TAG_EXACT_SYNTAX = 'override';
 
 class Walker extends Lint.AbstractWalker<undefined> {
+
     constructor(
             sourceFile: ts.SourceFile,
             ruleName: string,
@@ -58,8 +60,8 @@ class Walker extends Lint.AbstractWalker<undefined> {
     /** @override */
     public walk(sourceFile: ts.SourceFile) {
         const cb = (node: ts.Node): void => {
-            if (isOverridableElement(node)) {
-                this.checkElementDeclaration(node);
+            if (isSomeClassElement(node)) {
+                this.checkClassElement(node);
             }
             return ts.forEachChild(node, cb);
         };
@@ -67,9 +69,51 @@ class Walker extends Lint.AbstractWalker<undefined> {
         return ts.forEachChild(sourceFile, cb);
     }
 
-    private checkElementDeclaration(node: OverridableElement) {
+    private checkClassElement(element: AllClassElements) {
+        switch (element.kind) {
+                case ts.SyntaxKind.Constructor:
+                    this.checkConstructorDeclaration(element);
+                    break;
+                case ts.SyntaxKind.MethodDeclaration:
+                case ts.SyntaxKind.PropertyDeclaration:
+                case ts.SyntaxKind.GetAccessor:
+                case ts.SyntaxKind.SetAccessor:
+                    this.checkOverrideableElementDeclaration(element);
+                    break;
+            default:
+                this.checkNonOverrideableDeclaration(element);
+        }
+    }
+
+    private checkNonOverrideableDeclaration(node: AllClassElements) {
         const jsDoc = node.getChildren().filter(ts.isJSDoc);
         const foundTag = this.checkJSDocAndFindOverrideTag(jsDoc);
+        if (foundTag !== undefined) {
+            this.addFailureAtNode(foundTag, 'Extraneous override tag',
+                    Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
+        }
+    }
+
+    private checkConstructorDeclaration(node: ts.ConstructorDeclaration) {
+        const jsDoc = node.getChildren().filter(ts.isJSDoc);
+        const foundTag = this.checkJSDocAndFindOverrideTag(jsDoc);
+        if (foundTag !== undefined) {
+            this.addFailureAtNode(foundTag, 'Extraneous override tag: constructors always override the parent',
+                    Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
+        }
+    }
+
+    private checkOverrideableElementDeclaration(node: OverrideableElement) {
+        const jsDoc = node.getChildren().filter(ts.isJSDoc);
+        const foundTag = this.checkJSDocAndFindOverrideTag(jsDoc);
+
+        if (isStaticMember(node)) {
+            if (foundTag !== undefined) {
+                this.addFailureAtNode(foundTag, 'Extraneous override tag: static members cannot override',
+                        Lint.Replacement.deleteText(foundTag.getStart(), foundTag.getWidth()));
+            }
+            return;
+        }
 
         const parent = node.parent;
         if (parent == null || !isClassType(parent)) {
@@ -89,7 +133,7 @@ class Walker extends Lint.AbstractWalker<undefined> {
         }
     }
 
-    private fixAddOverrideKeyword(node: OverridableElement) {
+    private fixAddOverrideKeyword(node: AllClassElements) {
         return Lint.Replacement.appendText(node.getStart(), '/** @override */ ');
     }
 
@@ -127,7 +171,7 @@ class Walker extends Lint.AbstractWalker<undefined> {
         return child;
     }
 
-    private checkHeritageChain(declaration: ts.ClassDeclaration | ts.ClassExpression, node: OverridableElement)
+    private checkHeritageChain(declaration: ts.ClassDeclaration | ts.ClassExpression, node: OverrideableElement)
             : ts.Type | undefined {
 
         const currentDeclaration = declaration;
@@ -150,6 +194,10 @@ class Walker extends Lint.AbstractWalker<undefined> {
         }
         return undefined;
     }
+}
+
+function isStaticMember(node: ts.Node): boolean {
+    return (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Static) !== 0;
 }
 
 function isJSDocTag(t: ts.Node): t is ts.JSDocTag {
