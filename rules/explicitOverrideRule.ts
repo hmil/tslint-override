@@ -141,7 +141,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         }
 
         const parent = node.parent;
-        if (parent == null || !isClassType(parent)) {
+        if (parent == null || !isClassType(parent)) {
             return;
         }
         const base = this.checkHeritageChain(parent, node);
@@ -159,11 +159,70 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private fixAddOverrideKeyword(node: AllClassElements) {
-        const fixer = this._options.useJsdocTag ?
-            '/** @override */ ' :
-            '@override ';
+       return (this._options.useJsdocTag) ?
+            this.fixWithJSDocTag(node) :
+            this.fixWithDecorator(node);
+    }
 
-        return Lint.Replacement.appendText(node.getStart(), fixer);
+    private fixWithDecorator(node: AllClassElements) {
+        return Lint.Replacement.appendText(node.getStart(), '@override ');
+    }
+
+    private fixWithJSDocTag(node: AllClassElements) {
+        const jsDoc = node.getChildren().filter(ts.isJSDoc);
+
+        if (jsDoc.length > 0) {
+            // Append the @override tag to existing jsDoc
+            const lastDoc = jsDoc[jsDoc.length - 1];
+            const docText = lastDoc.getText();
+
+            const insertPos = this.findPosToInsertJSDocTag(docText);
+            const indent = this.findJSDocIndentationAtPos(docText, insertPos);
+
+            const fix = indent + '@override\n';
+
+            return Lint.Replacement.appendText(lastDoc.getStart() + insertPos, fix);
+        } else {
+            // No Jsdoc found, create a new one with just the tag
+            return Lint.Replacement.appendText(node.getStart(), '/** @override */ ');
+        }
+    }
+
+    private findJSDocIndentationAtPos(text: string, pos: number): string {
+        const lastNL = text.substr(0, pos - 1).lastIndexOf('\n');
+        if (lastNL < 0) {
+            // Cannot find indentation with the info available here
+            // Just assume it's 4 spaces...
+            return '\n    ';
+        }
+        let acc = '';
+        let hasStar = false;
+        for (let i = lastNL + 1 ; i < text.length ; i++) {
+            const c = text.charAt(i);
+            if (!isJSDocIndent(c)) {
+                if (hasStar || c !== '*') {
+                    break;
+                }
+                hasStar = true;
+            }
+            acc += c;
+        }
+        return acc;
+    }
+
+    private findPosToInsertJSDocTag(text: string): number {
+        let posOfInsert = text.lastIndexOf('\n');
+        if (posOfInsert >= 0) {
+            return posOfInsert + 1;
+        }
+
+        posOfInsert = text.lastIndexOf('*/');
+        if (posOfInsert >= 0) {
+            return posOfInsert;
+        }
+
+        // This should not happen, but just to be exhaustive
+        return text.length - 1;
     }
 
     private checkNodeForOverrideKeyword(node: AllClassElements) {
@@ -184,12 +243,12 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         return matches[0];
     }
 
-    private checkNodeAndFindDecorator(node: ts.ClassElement): ts.Decorator | undefined {
+    private checkNodeAndFindDecorator(node: ts.ClassElement): ts.Decorator | undefined {
         const decorators = node.decorators;
         if (decorators == null) {
             return;
         }
-        let found: ts.Decorator | undefined;
+        let found: ts.Decorator | undefined;
         for (const dec of decorators) {
             const tmp = this.checkIndividualDecorator(dec, found !== undefined);
             if (found === undefined) {
@@ -213,8 +272,8 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     /**
      * Checks the '@override' tags in the JSDoc and returns it if one was found.
      */
-    private checkJSDocAndFindOverrideTag(jsDoc: ts.JSDoc[]): ts.JSDocTag | undefined {
-        let found: ts.JSDocTag | undefined;
+    private checkJSDocAndFindOverrideTag(jsDoc: ts.JSDoc[]): ts.JSDocTag | undefined {
+        let found: ts.JSDocTag | undefined;
         for (const doc of jsDoc) {
             for (const c of doc.getChildren()) {
                 const tmp = this.checkJSDocChild(c, found !== undefined);
@@ -226,7 +285,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         return found;
     }
 
-    private checkJSDocChild(child: ts.Node, found: boolean): ts.JSDocTag | undefined {
+    private checkJSDocChild(child: ts.Node, found: boolean): ts.JSDocTag | undefined {
         if (!isJSDocTag(child) || child.tagName.text !== OVERRIDE_KEYWORD) {
             return;
         }
@@ -272,4 +331,8 @@ function isJSDocTag(t: ts.Node): t is ts.JSDocTag {
 
 function isClassType(t: ts.Node | undefined): t is ts.ClassDeclaration | ts.ClassExpression {
     return t !== undefined && (t.kind === ts.SyntaxKind.ClassDeclaration || t.kind === ts.SyntaxKind.ClassExpression);
+}
+
+function isJSDocIndent(s: string) {
+    return s === ' ' || s === '\t' || s === '\xa0'; // Last one is nbsp
 }
