@@ -2,22 +2,22 @@ import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
 type AllClassElements =
-    ts.MethodDeclaration |
-    ts.PropertyDeclaration |
-    ts.GetAccessorDeclaration |
-    ts.SetAccessorDeclaration |
-    ts.IndexSignatureDeclaration |
-    ts.ConstructorDeclaration;
+        ts.MethodDeclaration |
+        ts.PropertyDeclaration |
+        ts.GetAccessorDeclaration |
+        ts.SetAccessorDeclaration |
+        ts.IndexSignatureDeclaration |
+        ts.ConstructorDeclaration;
 
 type OverrideableElement =
-    ts.MethodDeclaration |
-    ts.PropertyDeclaration |
-    ts.GetAccessorDeclaration |
-    ts.SetAccessorDeclaration;
+        ts.MethodDeclaration |
+        ts.PropertyDeclaration |
+        ts.GetAccessorDeclaration |
+        ts.SetAccessorDeclaration;
 
 type OverrideKeyword =
-    ts.Decorator |
-    ts.JSDocTag;
+        ts.Decorator |
+        ts.JSDocTag;
 
 function isSomeClassElement(el: ts.Node): el is AllClassElements {
     return ts.isClassElement(el);
@@ -83,10 +83,10 @@ const OVERRIDE_DECORATOR_MATCHER = /^@[oO]verride(\(\s*\))?$/;
 class Walker extends Lint.AbstractWalker<IOptions> {
 
     constructor(
-        sourceFile: ts.SourceFile,
-        ruleName: string,
-        private readonly _options: IOptions,
-        private readonly checker: ts.TypeChecker) {
+            sourceFile: ts.SourceFile,
+            ruleName: string,
+            private readonly _options: IOptions,
+            private readonly checker: ts.TypeChecker) {
         super(sourceFile, ruleName, _options);
     }
 
@@ -104,15 +104,15 @@ class Walker extends Lint.AbstractWalker<IOptions> {
 
     private checkClassElement(element: AllClassElements) {
         switch (element.kind) {
-            case ts.SyntaxKind.Constructor:
-                this.checkConstructorDeclaration(element);
-                break;
-            case ts.SyntaxKind.MethodDeclaration:
-            case ts.SyntaxKind.PropertyDeclaration:
-            case ts.SyntaxKind.GetAccessor:
-            case ts.SyntaxKind.SetAccessor:
-                this.checkOverrideableElementDeclaration(element);
-                break;
+                case ts.SyntaxKind.Constructor:
+                    this.checkConstructorDeclaration(element);
+                    break;
+                case ts.SyntaxKind.MethodDeclaration:
+                case ts.SyntaxKind.PropertyDeclaration:
+                case ts.SyntaxKind.GetAccessor:
+                case ts.SyntaxKind.SetAccessor:
+                    this.checkOverrideableElementDeclaration(element);
+                    break;
             default:
                 this.checkNonOverrideableElementDeclaration(element);
         }
@@ -122,7 +122,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         const foundKeyword = this.checkNodeForOverrideKeyword(node);
         if (foundKeyword !== undefined) {
             this.addFailureAtNode(foundKeyword, 'Extraneous override keyword',
-                Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
+                    Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
         }
     }
 
@@ -130,7 +130,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         const foundKeyword = this.checkNodeForOverrideKeyword(node);
         if (foundKeyword !== undefined) {
             this.addFailureAtNode(foundKeyword, 'Extraneous override keyword: constructors always override the parent',
-                Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
+                    Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
         }
     }
 
@@ -140,7 +140,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         if (isStaticMember(node)) {
             if (foundKeyword !== undefined) {
                 this.addFailureAtNode(foundKeyword, 'Extraneous override keyword: static members cannot override',
-                    Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
+                        Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
             }
             return;
         }
@@ -153,18 +153,18 @@ class Walker extends Lint.AbstractWalker<IOptions> {
 
         if (foundKeyword !== undefined && base === undefined) {
             this.addFailureAtNode(node.name, 'Member with @override keyword does not override any base class member',
-                Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
+            Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
         } else if (foundKeyword === undefined && base !== undefined) {
             const fix = this.fixAddOverrideKeyword(node);
             this.addFailureAtNode(node.name,
-                'Member is overriding a base member. Use the @override keyword if this override is intended',
-                fix,
-            );
+                    'Member is overriding a base member. Use the @override keyword if this override is intended',
+                    fix,
+                );
         }
     }
 
     private fixAddOverrideKeyword(node: AllClassElements) {
-        return (this._options.useJsdocTag) ?
+       return (this._options.useJsdocTag) ?
             this.fixWithJSDocTag(node) :
             this.fixWithDecorator(node);
     }
@@ -202,7 +202,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         }
         let acc = '';
         let hasStar = false;
-        for (let i = lastNL + 1; i < text.length; i++) {
+        for (let i = lastNL + 1 ; i < text.length ; i++) {
             const c = text.charAt(i);
             if (!isJSDocIndent(c)) {
                 if (hasStar || c !== '*') {
@@ -269,7 +269,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         }
         if (found) {
             this.addFailureAtNode(dec, `@override decorator already specified`,
-                Lint.Replacement.deleteFromTo(dec.pos, dec.end));
+                    Lint.Replacement.deleteFromTo(dec.pos, dec.end));
         }
         return dec;
     }
@@ -296,13 +296,13 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         }
         if (found) {
             this.addFailureAtNode(child.tagName, `@override jsdoc tag already specified`,
-                Lint.Replacement.deleteFromTo(child.pos, child.end));
+                    Lint.Replacement.deleteFromTo(child.pos, child.end));
         }
         return child;
     }
 
     private checkHeritageChain(declaration: ts.ClassDeclaration | ts.ClassExpression, node: OverrideableElement)
-        : ts.Type | undefined {
+            : ts.Type | undefined {
 
         const currentDeclaration = declaration;
         if (currentDeclaration === undefined) {
