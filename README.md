@@ -118,7 +118,10 @@ Example in VSCode:
 
 ## Contributing, Credits, etc
 
-Author: Hadrien Milano <github.com/hmil>  
+Author: [@hmil](https://github.com/hmil)  
+Contributions:
+- [@stasberkov](https://github.com/stasberkov) - Added `exclude-interfaces` option.
+
 License: MIT
 
 Please star this repo if you like it, and submit code and issues if something doesn't work.
