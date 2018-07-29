@@ -104,15 +104,15 @@ class Walker extends Lint.AbstractWalker<IOptions> {
 
     private checkClassElement(element: AllClassElements) {
         switch (element.kind) {
-                case ts.SyntaxKind.Constructor:
-                    this.checkConstructorDeclaration(element);
-                    break;
-                case ts.SyntaxKind.MethodDeclaration:
-                case ts.SyntaxKind.PropertyDeclaration:
-                case ts.SyntaxKind.GetAccessor:
-                case ts.SyntaxKind.SetAccessor:
-                    this.checkOverrideableElementDeclaration(element);
-                    break;
+            case ts.SyntaxKind.Constructor:
+                this.checkConstructorDeclaration(element);
+                break;
+            case ts.SyntaxKind.MethodDeclaration:
+            case ts.SyntaxKind.PropertyDeclaration:
+            case ts.SyntaxKind.GetAccessor:
+            case ts.SyntaxKind.SetAccessor:
+                this.checkOverrideableElementDeclaration(element);
+                break;
             default:
                 this.checkNonOverrideableElementDeclaration(element);
         }
@@ -153,13 +153,12 @@ class Walker extends Lint.AbstractWalker<IOptions> {
 
         if (foundKeyword !== undefined && base === undefined) {
             this.addFailureAtNode(node.name, 'Member with @override keyword does not override any base class member',
-            Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
+                    Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
         } else if (foundKeyword === undefined && base !== undefined) {
             const fix = this.fixAddOverrideKeyword(node);
             this.addFailureAtNode(node.name,
                     'Member is overriding a base member. Use the @override keyword if this override is intended',
-                    fix,
-                );
+                    fix);
         }
     }
 

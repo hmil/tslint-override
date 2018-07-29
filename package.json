@@ -4,8 +4,7 @@
     "description": "tslint support for an override keyword",
     "main": "tslint-override.json",
     "scripts": {
-        "test": "tslint --test test && node_modules/.bin/ts-node -P test/tsconfig.json test/test.ts && tslint -p test test/test.ts && npm run test-exclude-interfaces",
-        "test-exclude-interfaces": "tslint --project test/exclude-interfaces -c test/exclude-interfaces/tslint.json",
+        "test": "tslint --test test && node_modules/.bin/ts-node -P test/tsconfig.json test/test.ts && tslint -p test test/test.ts && tslint -p test/exclude-interfaces",
         "lint": "tslint -p .",
         "tslint": "tslint",
         "build": "npm run clean && tsc -p .",

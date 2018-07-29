@@ -54,6 +54,21 @@ Then, in your `tslint.json`, extend the tslint-override configuration.
 }
 ```
 
+### Excluding interfaces
+
+By default, `tslint-override` checks all members inherited or defined by any object in the heritage chain. You can opt out of `interface` checking. In that case, `tslint-override` will only look at parent `class`es.
+
+```json
+{
+    "extends": [
+        "tslint-override"
+    ],
+    "rules": {
+        "explicit-override": [ true, "exclude-interfaces" ]
+    }
+}
+```
+
 ### Using decorators
 
 If you want to use the decorator syntax, you will need the `override` decorator in your scope. There are two ways to do this:
@@ -86,7 +101,7 @@ If your love for java will never die, you can define this with a capital 'O' and
 
 ---
 
-Also, if you do not need support for jsdoc tags, you can deactivate it by using this config in `tslint.json`:
+Both jsdoc tags and decorators are accepted by default. If you want to force one and ignore the other, specify either the `decorator` or `jsdoc` parameter like this:
 
 ```json
     "rules": {
