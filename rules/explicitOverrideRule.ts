@@ -25,10 +25,12 @@ function isSomeClassElement(el: ts.Node): el is AllClassElements {
 
 const OPTION_DECORATOR = 'decorator';
 const OPTION_JSDOC_TAG = 'jsdoc';
+const OPTION_EXCLUDE_INTERFACES = 'exclude-interfaces';
 
 interface IOptions {
     useJsdocTag: boolean;
     useDecorator: boolean;
+    excludeInterfaces: boolean;
 }
 
 export class Rule extends Lint.Rules.TypedRule {
@@ -45,15 +47,16 @@ export class Rule extends Lint.Rules.TypedRule {
 
             * \`"${OPTION_DECORATOR}"\` Uses a decorator: \`@override method() { }\`
             * \`"${OPTION_JSDOC_TAG}"\` (default) Uses a jsdoc tag: \`/** @override */ method() { }\`
+            * \`"${OPTION_EXCLUDE_INTERFACES}"\` Exclude interfaces from member override checks (default: false)
         `,
         options: {
             type: 'array',
             items: {
                 type: 'string',
-                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG],
+                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG, OPTION_EXCLUDE_INTERFACES],
             },
             minLength: 1,
-            maxLength: 2,
+            maxLength: 3,
         },
         optionExamples: [[true, OPTION_DECORATOR]],
         type: 'typescript',
@@ -64,10 +67,12 @@ export class Rule extends Lint.Rules.TypedRule {
     public applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): Lint.RuleFailure[] {
         const hasJsDocParameter = this.ruleArguments.indexOf(OPTION_JSDOC_TAG) !== -1;
         const hasDecoratorParameter = this.ruleArguments.indexOf(OPTION_DECORATOR) !== -1;
+        const hasExcludeInterfacesParameter = this.ruleArguments.indexOf(OPTION_EXCLUDE_INTERFACES) !== -1;
         return this.applyWithWalker(
             new Walker(sourceFile, this.ruleName, {
                 useDecorator: hasDecoratorParameter || !hasJsDocParameter,
-                useJsdocTag: hasJsDocParameter || !hasDecoratorParameter
+                useJsdocTag: hasJsDocParameter || !hasDecoratorParameter,
+                excludeInterfaces: hasExcludeInterfacesParameter
             }, program.getTypeChecker()));
     }
 }
@@ -308,6 +313,9 @@ class Walker extends Lint.AbstractWalker<IOptions> {
             return;
         }
         for (const clause of clauses) {
+            if (this.options.excludeInterfaces && clause.token === ts.SyntaxKind.ImplementsKeyword) {
+                continue;
+            }
             for (const typeNode of clause.types) {
                 const type = this.checker.getTypeAtLocation(typeNode);
                 for (const symb of type.getProperties()) {

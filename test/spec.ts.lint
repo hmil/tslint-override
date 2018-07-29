@@ -1,3 +1,8 @@
+interface SomeInterface1 {
+    func1();
+    func2();
+}
+
 abstract class ABase {
     constructor() { }
     public static staticBase = 'np';
@@ -41,6 +46,18 @@ class Intermediary extends DynBase {
     constructor() { }
 }
 
+class SomeInterface1Impl implements SomeInterface1 {
+    func1() {}
+    ~~~~~       [Member is overriding a base member. Use the @override keyword if this override is intended]
+    /** @override */
+    /** @override */
+         ~~~~~~~~     [@override jsdoc tag already specified]
+    func2() {}
+    
+    /** @override */
+    func3() {}
+    ~~~~~       [Member with @override keyword does not override any base class member]
+}
 
 class SomeMap {
     /** @override */

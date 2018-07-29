@@ -1,0 +1,11 @@
+{
+    "extends": "../../tslint-override.json",
+    "rules": {
+        "no-empty-interface": true,
+        "explicit-override": [
+            true,
+            "jsdoc",
+            "exclude-interfaces"
+        ]
+    }
+}
