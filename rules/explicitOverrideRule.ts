@@ -87,8 +87,6 @@ export class Rule extends Lint.Rules.TypedRule {
     }
 }
 
-const OVERRIDE_KEYWORD = 'override';
-
 class Walker extends Lint.AbstractWalker<IOptions> {
 
     private readonly decoratorMatcher: RegExp;
@@ -100,7 +98,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
             private readonly checker: ts.TypeChecker) {
         super(sourceFile, ruleName, _options);
 
-        this.decoratorMatcher = new RegExp(`^${_options.lowercase}(\(\s*\))?$`);
+        this.decoratorMatcher = new RegExp(`^@${_options.lowercase ? 'override' : 'Override'}(\(\s*\))?$`);
     }
 
     /** @override */
@@ -304,7 +302,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private checkJSDocChild(child: ts.Node, found: boolean): ts.JSDocTag | undefined {
-        if (!isJSDocTag(child) || child.tagName.text !== OVERRIDE_KEYWORD) {
+        if (!isJSDocTag(child) || child.tagName.text !== (this._options.lowercase ? 'override' : 'Override')) {
             return;
         }
         if (found) {
