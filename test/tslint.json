@@ -1,3 +1,4 @@
 {
-    "extends": "../tslint-override.json"
+    "extends": "../tslint-override.json",
+    "one-line": true
 }

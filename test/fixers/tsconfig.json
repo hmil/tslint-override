@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "target": "es2015",
+      "experimentalDecorators": true,
+      "strict": true
+    },
+    "files": [
+      "spec.bad.tofix.ts"
+    ]
+  }
