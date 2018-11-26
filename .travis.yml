@@ -6,7 +6,6 @@ script:
 - npm run build
 - npm run lint
 - npm test
-- "./test/fixes/test.sh"
 deploy:
   provider: npm
   email: hadrien.milano@gmail.com

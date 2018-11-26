@@ -1,3 +1,5 @@
+import '../../register';
+
 abstract class First {
 
 }
@@ -7,11 +9,17 @@ class Foo extends First {
     /** doc comment **/
     public bar(): void { }
 
+    public bar2(): void { }
+
     public overrideMe(arg0: string): number { return 0; }
     public overrideMe2(arg0: string): number { return 0; }
     public overrideMe3(arg0: string): number { return 0; }
 
     public notToOverride(): void { } 
+
+    public overloadedMethod(): void;
+    public overloadedMethod(v: string): void;
+    public overloadedMethod(v?: string): void { }
 }
 
 export class Baz extends Foo {
@@ -23,7 +31,7 @@ export class Baz extends Foo {
       Second multi doc comment
       @override
     **/
-    @override public bar(): void { }
+    public bar(): void { }
 
     /**
      * @override
@@ -37,7 +45,7 @@ export class Baz extends Foo {
      * 
      * @since 0.2.2
      */
-    @override public overrideMe(arg0: string): number {
+    public overrideMe(arg0: string): number {
         return 1;
     }
 
@@ -48,16 +56,21 @@ export class Baz extends Foo {
       
       @since 0.2.2
     */
-    @override public overrideMe2(arg0: string): number {
+    public overrideMe2(arg0: string): number {
         return 1;
     }
 
     /** This function is already documented on one line */
-    @override public overrideMe3(arg0: string): number {
+    public overrideMe3(arg0: string): number {
         return 1;
     }
 
-    @override public notToOverride(): void { }
+    public notToOverride(): void { }
 
-    @override public bar(): void { }
+    @override
+    @override public bar2(): void { }
+
+    public overloadedMethod(): void;
+    public overloadedMethod(v: string): void;
+    public overloadedMethod(v?: string): void { }
 }

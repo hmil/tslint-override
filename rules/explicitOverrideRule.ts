@@ -29,6 +29,12 @@ const OPTION_EXCLUDE_INTERFACES = 'exclude-interfaces';
 const OPTION_NAME_LOWERCASE = '@override';
 const OPTION_NAME_UPPERCASE = '@Override';
 
+const MESSAGE_EXTRA_CONSTRUCTOR = 'Extraneous override keyword: constructors always override the parent';
+const MESSAGE_EXTRA_STATIC = 'Extraneous override keyword: static members cannot override';
+const MESSAGE_EXTRA_NO_OVERRIDE = 'Member with @override keyword does not override any base class member';
+const MESSAGE_MISSING_OVERRIDE = 'Member is overriding a base member. Use the @override keyword if this override is intended';
+const MESSAGE_EXTRA = 'Extraneous override keyword';
+
 interface IOptions {
     useJsdocTag: boolean;
     useDecorator: boolean;
@@ -87,6 +93,11 @@ export class Rule extends Lint.Rules.TypedRule {
     }
 }
 
+type HeritageChainCheckResult = {
+    baseClass?: ts.Type;
+    baseInterface?: ts.Type;
+} | undefined;
+
 class Walker extends Lint.AbstractWalker<IOptions> {
 
     private readonly decoratorMatcher: RegExp;
@@ -132,16 +143,14 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     private checkNonOverrideableElementDeclaration(node: AllClassElements) {
         const foundKeyword = this.checkNodeForOverrideKeyword(node);
         if (foundKeyword !== undefined) {
-            this.addFailureAtNode(foundKeyword, 'Extraneous override keyword',
-                    Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
+            this.addFailureAtNode(foundKeyword, MESSAGE_EXTRA, fixRemoveOverrideKeyword(foundKeyword));
         }
     }
 
     private checkConstructorDeclaration(node: ts.ConstructorDeclaration) {
         const foundKeyword = this.checkNodeForOverrideKeyword(node);
         if (foundKeyword !== undefined) {
-            this.addFailureAtNode(foundKeyword, 'Extraneous override keyword: constructors always override the parent',
-                    Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
+            this.addFailureAtNode(foundKeyword, MESSAGE_EXTRA_CONSTRUCTOR, fixRemoveOverrideKeyword(foundKeyword));
         }
     }
 
@@ -150,9 +159,13 @@ class Walker extends Lint.AbstractWalker<IOptions> {
 
         if (isStaticMember(node)) {
             if (foundKeyword !== undefined) {
-                this.addFailureAtNode(foundKeyword, 'Extraneous override keyword: static members cannot override',
-                        Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
+                this.addFailureAtNode(foundKeyword, MESSAGE_EXTRA_STATIC, fixRemoveOverrideKeyword(foundKeyword));
             }
+            return;
+        }
+
+        if (!ts.isPropertyDeclaration(node) && node.body === undefined) {
+            // Special case if this is just an overload signature
             return;
         }
 
@@ -162,14 +175,22 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         }
         const base = this.checkHeritageChain(parent, node);
 
-        if (foundKeyword !== undefined && base === undefined) {
-            this.addFailureAtNode(node.name, 'Member with @override keyword does not override any base class member',
-                    Lint.Replacement.deleteText(foundKeyword.getStart(), foundKeyword.getWidth()));
-        } else if (foundKeyword === undefined && base !== undefined) {
-            const fix = this.fixAddOverrideKeyword(node);
-            this.addFailureAtNode(node.name,
-                    'Member is overriding a base member. Use the @override keyword if this override is intended',
-                    fix);
+        if (
+            // This member declares @override
+            foundKeyword !== undefined &&
+            // But no base symbol was found
+            (base === undefined || base.baseClass === undefined && base.baseInterface === undefined)
+        ) {
+            this.addFailureAtNode(node.name, MESSAGE_EXTRA_NO_OVERRIDE, fixRemoveOverrideKeyword(foundKeyword));
+        } else if (
+            // This member does not declare @override
+            foundKeyword === undefined &&
+            // And something was found
+            base !== undefined &&
+            // And that thing is either a base class, or an interface and we are not excluding interface
+            (base.baseClass !== undefined || base.baseInterface !== undefined && !this._options.excludeInterfaces)
+        ) {
+            this.addFailureAtNode(node.name, MESSAGE_MISSING_OVERRIDE, this.fixAddOverrideKeyword(node));
         }
     }
 
@@ -313,7 +334,10 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private checkHeritageChain(declaration: ts.ClassDeclaration | ts.ClassExpression, node: OverrideableElement)
-            : ts.Type | undefined {
+            : HeritageChainCheckResult {
+
+        let baseInterface: ts.Type | undefined;
+        let baseClass: ts.Type | undefined;
 
         const currentDeclaration = declaration;
         if (currentDeclaration === undefined) {
@@ -324,20 +348,26 @@ class Walker extends Lint.AbstractWalker<IOptions> {
             return;
         }
         for (const clause of clauses) {
-            if (this.options.excludeInterfaces && clause.token === ts.SyntaxKind.ImplementsKeyword) {
-                continue;
-            }
+            const isInterface = clause.token === ts.SyntaxKind.ImplementsKeyword;
             for (const typeNode of clause.types) {
                 const type = this.checker.getTypeAtLocation(typeNode);
                 for (const symb of type.getProperties()) {
                     if (symb.name === node.name.getText()) {
-                        return type;
+                        if (isInterface) {
+                            baseInterface = type;
+                        } else {
+                            baseClass = type;
+                        }
                     }
                 }
             }
         }
-        return undefined;
+        return { baseInterface, baseClass };
     }
+}
+
+function fixRemoveOverrideKeyword(keyword: OverrideKeyword) {
+    return Lint.Replacement.deleteText(keyword.getStart(), keyword.getWidth());
 }
 
 function isStaticMember(node: ts.Node): boolean {

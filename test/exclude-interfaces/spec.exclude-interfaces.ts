@@ -14,6 +14,9 @@ interface TestInterface2 {
 }
 
 abstract class AbstractClass2 implements TestInterface2 {
+    /**
+     * @override
+     */
     func1() {
     }
     func2() {
