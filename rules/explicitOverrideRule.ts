@@ -58,8 +58,8 @@ export class Rule extends Lint.Rules.TypedRule {
             * \`"${OPTION_DECORATOR}"\` Uses a decorator: \`@override method() { }\`
             * \`"${OPTION_JSDOC_TAG}"\` (default) Uses a jsdoc tag: \`/** @override */ method() { }\`
             * \`"${OPTION_EXCLUDE_INTERFACES}"\` Exclude interfaces from member override checks (default: false)
-            * \`"${OPTION_NAME_LOWERCASE}"\` Uses the lowercase version in both JSDoc & decorator: \`@override\`
-            * \`"${OPTION_NAME_UPPERCASE}"\` Uses the uppercase version in both JSDoc & decorator: \`@Override\`
+            * \`"${OPTION_NAME_LOWERCASE}"\` (default) If using decorators, uses the lowercase version: \`@override\`
+            * \`"${OPTION_NAME_UPPERCASE}"\` If using decorators, uses the uppercase version: \`@Override\`
         `,
         options: {
             type: 'array',
@@ -92,6 +92,8 @@ export class Rule extends Lint.Rules.TypedRule {
             }, program.getTypeChecker()));
     }
 }
+
+const OVERRIDE_KEYWORD = 'override';
 
 type HeritageChainCheckResult = {
     baseClass?: ts.Type;
@@ -206,7 +208,6 @@ class Walker extends Lint.AbstractWalker<IOptions> {
 
     private fixWithJSDocTag(node: AllClassElements) {
         const jsDoc = node.getChildren().filter(ts.isJSDoc);
-        const name = this._options.lowercase ? '@override' : '@Override';
 
         if (jsDoc.length > 0) {
             // Append the @override tag to existing jsDoc
@@ -216,12 +217,12 @@ class Walker extends Lint.AbstractWalker<IOptions> {
             const insertPos = this.findPosToInsertJSDocTag(docText);
             const indent = this.findJSDocIndentationAtPos(docText, insertPos);
 
-            const fix = indent + name + '\n';
+            const fix = indent + '@override\n';
 
             return Lint.Replacement.appendText(lastDoc.getStart() + insertPos, fix);
         } else {
             // No Jsdoc found, create a new one with just the tag
-            return Lint.Replacement.appendText(node.getStart(), `/** ${name} */ `);
+            return Lint.Replacement.appendText(node.getStart(), '/** @override */ ');
         }
     }
 
@@ -323,7 +324,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private checkJSDocChild(child: ts.Node, found: boolean): ts.JSDocTag | undefined {
-        if (!isJSDocTag(child) || child.tagName.text !== (this._options.lowercase ? 'override' : 'Override')) {
+        if (!isJSDocTag(child) || child.tagName.text !== OVERRIDE_KEYWORD) {
             return;
         }
         if (found) {
