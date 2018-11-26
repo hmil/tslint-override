@@ -165,16 +165,6 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         }
     }
 
-    // private isLastOverload(node: OverrideableElement) {
-    //     let lastOverload: AllClassElements | null = null;
-    //     for (const child of node.getChildren()) {
-    //         if (isSomeClassElement(child) && child.name === node.name) {
-    //             lastOverload = child;
-    //         }
-    //     }
-    //     return lastOverload === node;
-    // }
-
     private fixAddOverrideKeyword(node: AllClassElements) {
        return (this._options.useJsdocTag) ?
             this.fixWithJSDocTag(node) :
