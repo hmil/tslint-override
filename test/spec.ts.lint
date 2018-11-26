@@ -27,6 +27,9 @@ class Base extends ABase {
     public propertyNotToOverride = 1;
     public methodToOverride(): void { }
     public methodNotToOverride(): void { }
+    public overloadedMethod(a: number): void;
+    public overloadedMethod(a: string): void;
+    public overloadedMethod(a: number | string): void { }
 }
 
 const DynBase = class extends ABase {
@@ -115,6 +118,11 @@ class Example1 extends Base {
     /** @override */ public aMethodToOverride(): void { }
     public aMethodNotToOverride(): void { }
            ~~~~~~~~~~~~~~~~~~~~        [Member is overriding a base member. Use the @override keyword if this override is intended]
+
+    public overloadedMethod(a: number): void;
+    public overloadedMethod(a: string): void;
+    public overloadedMethod(a: number | string): void { }
+           ~~~~~~~~~~~~~~~~            [Member is overriding a base member. Use the @override keyword if this override is intended]
 }
 
 const Example2 = class extends Base {
