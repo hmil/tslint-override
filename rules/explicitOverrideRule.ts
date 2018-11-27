@@ -26,8 +26,7 @@ function isSomeClassElement(el: ts.Node): el is AllClassElements {
 const OPTION_DECORATOR = 'decorator';
 const OPTION_JSDOC_TAG = 'jsdoc';
 const OPTION_EXCLUDE_INTERFACES = 'exclude-interfaces';
-const OPTION_NAME_LOWERCASE = '@override';
-const OPTION_NAME_UPPERCASE = '@Override';
+const OPTION_DECORATOR_PASCAL_CASE = 'pascal-case-decorator';
 
 const MESSAGE_EXTRA_CONSTRUCTOR = 'Extraneous override keyword: constructors always override the parent';
 const MESSAGE_EXTRA_STATIC = 'Extraneous override keyword: static members cannot override';
@@ -39,8 +38,7 @@ interface IOptions {
     useJsdocTag: boolean;
     useDecorator: boolean;
     excludeInterfaces: boolean;
-    lowercase: boolean;
-    uppercase: boolean;
+    usePascalCaseDecorator: boolean;
 }
 
 export class Rule extends Lint.Rules.TypedRule {
@@ -58,14 +56,13 @@ export class Rule extends Lint.Rules.TypedRule {
             * \`"${OPTION_DECORATOR}"\` Uses a decorator: \`@override method() { }\`
             * \`"${OPTION_JSDOC_TAG}"\` (default) Uses a jsdoc tag: \`/** @override */ method() { }\`
             * \`"${OPTION_EXCLUDE_INTERFACES}"\` Exclude interfaces from member override checks (default: false)
-            * \`"${OPTION_NAME_LOWERCASE}"\` (default) If using decorators, uses the lowercase version: \`@override\`
-            * \`"${OPTION_NAME_UPPERCASE}"\` If using decorators, uses the uppercase version: \`@Override\`
+            * \`"${OPTION_DECORATOR_PASCAL_CASE}"\` If using decorators, uses the uppercase version: \`@Override\` (default: false)
         `,
         options: {
             type: 'array',
             items: {
                 type: 'string',
-                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG, OPTION_EXCLUDE_INTERFACES, OPTION_NAME_LOWERCASE, OPTION_NAME_UPPERCASE],
+                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG, OPTION_EXCLUDE_INTERFACES, OPTION_DECORATOR_PASCAL_CASE],
             },
             minLength: 1,
             maxLength: 4,
@@ -80,20 +77,20 @@ export class Rule extends Lint.Rules.TypedRule {
         const hasJsDocParameter = this.ruleArguments.indexOf(OPTION_JSDOC_TAG) !== -1;
         const hasDecoratorParameter = this.ruleArguments.indexOf(OPTION_DECORATOR) !== -1;
         const hasExcludeInterfacesParameter = this.ruleArguments.indexOf(OPTION_EXCLUDE_INTERFACES) !== -1;
-        const hasLowercaseParameter = this.ruleArguments.indexOf(OPTION_NAME_LOWERCASE) !== -1;
-        const hasUppercaseParameter = this.ruleArguments.indexOf(OPTION_NAME_UPPERCASE) !== -1;
+        const hasPascalCaseParameter = this.ruleArguments.indexOf(OPTION_DECORATOR_PASCAL_CASE) !== -1;
+
         return this.applyWithWalker(
             new Walker(sourceFile, this.ruleName, {
                 useDecorator: hasDecoratorParameter || !hasJsDocParameter,
                 useJsdocTag: hasJsDocParameter || !hasDecoratorParameter,
                 excludeInterfaces: hasExcludeInterfacesParameter,
-                lowercase: hasLowercaseParameter || !hasUppercaseParameter,
-                uppercase: hasUppercaseParameter
+                usePascalCaseDecorator: hasPascalCaseParameter
             }, program.getTypeChecker()));
     }
 }
 
 const OVERRIDE_KEYWORD = 'override';
+const OVERRIDE_DECORATOR_MATCHER = /^@[oO]verride(\(\s*\))?$/;
 
 type HeritageChainCheckResult = {
     baseClass?: ts.Type;
@@ -102,16 +99,12 @@ type HeritageChainCheckResult = {
 
 class Walker extends Lint.AbstractWalker<IOptions> {
 
-    private readonly decoratorMatcher: RegExp;
-
     constructor(
             sourceFile: ts.SourceFile,
             ruleName: string,
             private readonly _options: IOptions,
             private readonly checker: ts.TypeChecker) {
         super(sourceFile, ruleName, _options);
-
-        this.decoratorMatcher = new RegExp(`^@${_options.lowercase ? 'override' : 'Override'}(\(\s*\))?$`);
     }
 
     /** @override */
@@ -203,7 +196,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private fixWithDecorator(node: AllClassElements) {
-        return Lint.Replacement.appendText(node.getStart(), this._options.lowercase ? '@override ' : '@Override ');
+        return Lint.Replacement.appendText(node.getStart(), this._options.usePascalCaseDecorator ? '@Override ' : '@override ');
     }
 
     private fixWithJSDocTag(node: AllClassElements) {
@@ -297,7 +290,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private checkIndividualDecorator(dec: ts.Decorator, found: boolean) {
-        if (!this.decoratorMatcher.test(dec.getText())) {
+        if (!OVERRIDE_DECORATOR_MATCHER.test(dec.getText())) {
             return;
         }
         if (found) {
