@@ -1,5 +1,7 @@
 import '../../register';
 
+function Override(_target: any, _propertyKey: string, _descriptor?: PropertyDescriptor) { }
+
 abstract class First {
 
 }

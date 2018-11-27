@@ -141,6 +141,7 @@ Example in VSCode:
 
 Author: [@hmil](https://github.com/hmil)  
 Contributions:
+- [@Yuudaari](https://github.com/Yuudaari) - Added `pascal-case-fixer` option.
 - [@stasberkov](https://github.com/stasberkov) - Added `exclude-interfaces` option.
 
 License: MIT

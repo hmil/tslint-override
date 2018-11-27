@@ -33,7 +33,7 @@ export class Baz extends Foo {
       Second multi doc comment
       @override
     **/
-    @override public bar(): void { }
+    @Override public bar(): void { }
 
     /**
      * @override
@@ -47,7 +47,7 @@ export class Baz extends Foo {
      * 
      * @since 0.2.2
      */
-    @override public overrideMe(arg0: string): number {
+    @Override public overrideMe(arg0: string): number {
         return 1;
     }
 
@@ -58,20 +58,20 @@ export class Baz extends Foo {
       
       @since 0.2.2
     */
-    @override public overrideMe2(arg0: string): number {
+    @Override public overrideMe2(arg0: string): number {
         return 1;
     }
 
     /** This function is already documented on one line */
-    @override public overrideMe3(arg0: string): number {
+    @Override public overrideMe3(arg0: string): number {
         return 1;
     }
 
-    @override public notToOverride(): void { }
+    @Override public notToOverride(): void { }
 
     @override public bar2(): void { }
 
     public overloadedMethod(): void;
     public overloadedMethod(v: string): void;
-    @override public overloadedMethod(v?: string): void { }
+    @Override public overloadedMethod(v?: string): void { }
 }
