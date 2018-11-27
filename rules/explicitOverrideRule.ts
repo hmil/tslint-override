@@ -26,7 +26,7 @@ function isSomeClassElement(el: ts.Node): el is AllClassElements {
 const OPTION_DECORATOR = 'decorator';
 const OPTION_JSDOC_TAG = 'jsdoc';
 const OPTION_EXCLUDE_INTERFACES = 'exclude-interfaces';
-const OPTION_DECORATOR_PASCAL_CASE = 'pascal-case-decorator';
+const OPTION_FIX_PASCAL_CASE = 'pascal-case-fixer';
 
 const MESSAGE_EXTRA_CONSTRUCTOR = 'Extraneous override keyword: constructors always override the parent';
 const MESSAGE_EXTRA_STATIC = 'Extraneous override keyword: static members cannot override';
@@ -38,7 +38,7 @@ interface IOptions {
     useJsdocTag: boolean;
     useDecorator: boolean;
     excludeInterfaces: boolean;
-    usePascalCaseDecorator: boolean;
+    usePascalCase: boolean;
 }
 
 export class Rule extends Lint.Rules.TypedRule {
@@ -56,13 +56,13 @@ export class Rule extends Lint.Rules.TypedRule {
             * \`"${OPTION_DECORATOR}"\` Uses a decorator: \`@override method() { }\`
             * \`"${OPTION_JSDOC_TAG}"\` (default) Uses a jsdoc tag: \`/** @override */ method() { }\`
             * \`"${OPTION_EXCLUDE_INTERFACES}"\` Exclude interfaces from member override checks (default: false)
-            * \`"${OPTION_DECORATOR_PASCAL_CASE}"\` If using decorators, uses the uppercase version: \`@Override\` (default: false)
+            * \`"${OPTION_FIX_PASCAL_CASE}"\` Uses PascalCase \`@Override\` for the jsdoc tag or decorator in the fixer (default: false)
         `,
         options: {
             type: 'array',
             items: {
                 type: 'string',
-                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG, OPTION_EXCLUDE_INTERFACES, OPTION_DECORATOR_PASCAL_CASE],
+                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG, OPTION_EXCLUDE_INTERFACES, OPTION_FIX_PASCAL_CASE],
             },
             minLength: 1,
             maxLength: 4,
@@ -77,19 +77,20 @@ export class Rule extends Lint.Rules.TypedRule {
         const hasJsDocParameter = this.ruleArguments.indexOf(OPTION_JSDOC_TAG) !== -1;
         const hasDecoratorParameter = this.ruleArguments.indexOf(OPTION_DECORATOR) !== -1;
         const hasExcludeInterfacesParameter = this.ruleArguments.indexOf(OPTION_EXCLUDE_INTERFACES) !== -1;
-        const hasPascalCaseParameter = this.ruleArguments.indexOf(OPTION_DECORATOR_PASCAL_CASE) !== -1;
+        const hasPascalCaseParameter = this.ruleArguments.indexOf(OPTION_FIX_PASCAL_CASE) !== -1;
 
         return this.applyWithWalker(
             new Walker(sourceFile, this.ruleName, {
                 useDecorator: hasDecoratorParameter || !hasJsDocParameter,
                 useJsdocTag: hasJsDocParameter || !hasDecoratorParameter,
                 excludeInterfaces: hasExcludeInterfacesParameter,
-                usePascalCaseDecorator: hasPascalCaseParameter
+                usePascalCase: hasPascalCaseParameter
             }, program.getTypeChecker()));
     }
 }
 
-const OVERRIDE_KEYWORD = 'override';
+const OVERRIDE_KEYWORD_CAMEL = 'override';
+const OVERRIDE_KEYWORD_PASCAL = 'Override';
 const OVERRIDE_DECORATOR_MATCHER = /^@[oO]verride(\(\s*\))?$/;
 
 type HeritageChainCheckResult = {
@@ -196,7 +197,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private fixWithDecorator(node: AllClassElements) {
-        return Lint.Replacement.appendText(node.getStart(), this._options.usePascalCaseDecorator ? '@Override ' : '@override ');
+        return Lint.Replacement.appendText(node.getStart(), `@${this.getKeyword()} `);
     }
 
     private fixWithJSDocTag(node: AllClassElements) {
@@ -210,12 +211,12 @@ class Walker extends Lint.AbstractWalker<IOptions> {
             const insertPos = this.findPosToInsertJSDocTag(docText);
             const indent = this.findJSDocIndentationAtPos(docText, insertPos);
 
-            const fix = indent + '@override\n';
+            const fix = indent + `@${this.getKeyword()}\n`;
 
             return Lint.Replacement.appendText(lastDoc.getStart() + insertPos, fix);
         } else {
             // No Jsdoc found, create a new one with just the tag
-            return Lint.Replacement.appendText(node.getStart(), '/** @override */ ');
+            return Lint.Replacement.appendText(node.getStart(), `/** @${this.getKeyword()} */ `);
         }
     }
 
@@ -317,7 +318,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private checkJSDocChild(child: ts.Node, found: boolean): ts.JSDocTag | undefined {
-        if (!isJSDocTag(child) || child.tagName.text !== OVERRIDE_KEYWORD) {
+        if (!isJSDocTag(child) || child.tagName.text !== OVERRIDE_KEYWORD_CAMEL && child.tagName.text !== OVERRIDE_KEYWORD_PASCAL) {
             return;
         }
         if (found) {
@@ -357,6 +358,10 @@ class Walker extends Lint.AbstractWalker<IOptions> {
             }
         }
         return { baseInterface, baseClass };
+    }
+
+    private getKeyword() {
+        return this._options.usePascalCase ? OVERRIDE_KEYWORD_PASCAL : OVERRIDE_KEYWORD_CAMEL;
     }
 }
 

@@ -109,11 +109,11 @@ Both jsdoc tags and decorators are accepted by default. If you want to force one
     }
 ```
 
-By default, the fixer will add a jsdoc tag, specifying the `decorator` option will also use the decorator fixer.
+By default, the fixer adds jsdoc tags. Specifying the `decorator` option will also change that to use decorators.
 
-#### PascalCase `@Override` decorator fixer
+#### PascalCase `@Override` fixer
 
-When the `decorator` option is passed, linting will accept both `@override` and `@Override`, but the fixer defaults to adding `@override`. This can be changed with the `pascal-case-decorator` option.
+Linting will accept both `@override` and `@Override` jsdoc tags or decorators, but the fixer defaults to adding `@override`. This can be changed with the `pascal-case-fixer` option.
 
 ```json
 {
@@ -121,12 +121,12 @@ When the `decorator` option is passed, linting will accept both `@override` and 
         "tslint-override"
     ],
     "rules": {
-        "explicit-override": [ true, "decorator", "pascal-case-decorator" ]
+        "explicit-override": [ true, "pascal-case-fixer" ]
     }
 }
 ```
 
-`tslint-override/register` does not support the `@Override` decorator, so you will have to define the decorator yourself.
+Note: `tslint-override/register` does not support the PascalCase `@Override` decorator, so you will have to define it yourself.
 
 ---
 
