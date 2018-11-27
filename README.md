@@ -99,7 +99,7 @@ function override(_target: any, _propertyKey: string, _descriptor?: PropertyDesc
 
 If your love for java will never die, you can define this with a capital 'O' and use `@Override` in your code instead.
 
----
+### Enforcing either jsdoc tags or decorators
 
 Both jsdoc tags and decorators are accepted by default. If you want to force one and ignore the other, specify either the `decorator` or `jsdoc` parameter like this:
 
@@ -108,6 +108,27 @@ Both jsdoc tags and decorators are accepted by default. If you want to force one
         "explicit-override": [ true, "decorator" ]
     }
 ```
+
+By default, the fixer will add a jsdoc tag, specifying the `decorator` option will also use the decorator fixer.
+
+#### PascalCase `@Override` decorator fixer
+
+When the `decorator` option is passed, linting will accept both `@override` and `@Override`, but the fixer defaults to adding `@override`. This can be changed with the `pascal-case-decorator` option.
+
+```json
+{
+    "extends": [
+        "tslint-override"
+    ],
+    "rules": {
+        "explicit-override": [ true, "decorator", "pascal-case-decorator" ]
+    }
+}
+```
+
+`tslint-override/register` does not support the `@Override` decorator, so you will have to define the decorator yourself.
+
+---
 
 ### IDE support
 
