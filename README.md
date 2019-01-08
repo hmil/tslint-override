@@ -128,6 +128,32 @@ Linting will accept both `@override` and `@Override` jsdoc tags or decorators, b
 
 Note: `tslint-override/register` does not support the PascalCase `@Override` decorator, so you will have to define it yourself.
 
+### Enforcing a new line in the fixer
+
+If you want the fixer to put a new line after the tag use hte `fixer-break-line-after` option.
+
+```json
+{
+    "extends": [
+        "tslint-override"
+    ],
+    "rules": {
+        "explicit-override": [ true, "fixer-break-line-after" ]
+    }
+}
+```
+or
+```json
+{
+    "extends": [
+        "tslint-override"
+    ],
+    "rules": {
+        "explicit-override": [ true, "decorator", "fixer-break-line-after" ]
+    }
+}
+```
+
 ---
 
 ### IDE support
@@ -143,6 +169,7 @@ Author: [@hmil](https://github.com/hmil)
 Contributions:
 - [@Yuudaari](https://github.com/Yuudaari) - Added `pascal-case-fixer` option.
 - [@stasberkov](https://github.com/stasberkov) - Added `exclude-interfaces` option.
+- [@mzyil](https://github.com/mzyil) - Added `fixer-break-line-after` option.
 
 License: MIT
 
