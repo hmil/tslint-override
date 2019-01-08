@@ -59,7 +59,7 @@ export class Rule extends Lint.Rules.TypedRule {
             * \`"${OPTION_JSDOC_TAG}"\` (default) Uses a jsdoc tag: \`/** @override */ method() { }\`
             * \`"${OPTION_EXCLUDE_INTERFACES}"\` Exclude interfaces from member override checks (default: false)
             * \`"${OPTION_FIX_PASCAL_CASE}"\` Uses PascalCase \`@Override\` for the jsdoc tag or decorator in the fixer (default: false)
-            * \`"${OPTION_BREAK_LINE_AFTER}"\` Breaks the line after jsdoc tag or decorator in the fixer (default: false)
+            * \`"${OPTION_BREAK_LINE_AFTER}"\` Breaks the line after the jsdoc tag or decorator in the fixer (default: false)
         `,
         options: {
             type: 'array',
