@@ -27,6 +27,7 @@ const OPTION_DECORATOR = 'decorator';
 const OPTION_JSDOC_TAG = 'jsdoc';
 const OPTION_EXCLUDE_INTERFACES = 'exclude-interfaces';
 const OPTION_FIX_PASCAL_CASE = 'pascal-case-fixer';
+const OPTION_BREAK_LINE_AFTER = 'fixer-break-line-after';
 
 const MESSAGE_EXTRA_CONSTRUCTOR = 'Extraneous override keyword: constructors always override the parent';
 const MESSAGE_EXTRA_STATIC = 'Extraneous override keyword: static members cannot override';
@@ -39,6 +40,7 @@ interface IOptions {
     useDecorator: boolean;
     excludeInterfaces: boolean;
     usePascalCase: boolean;
+    breakLineAfter: boolean;
 }
 
 export class Rule extends Lint.Rules.TypedRule {
@@ -57,12 +59,13 @@ export class Rule extends Lint.Rules.TypedRule {
             * \`"${OPTION_JSDOC_TAG}"\` (default) Uses a jsdoc tag: \`/** @override */ method() { }\`
             * \`"${OPTION_EXCLUDE_INTERFACES}"\` Exclude interfaces from member override checks (default: false)
             * \`"${OPTION_FIX_PASCAL_CASE}"\` Uses PascalCase \`@Override\` for the jsdoc tag or decorator in the fixer (default: false)
+            * \`"${OPTION_BREAK_LINE_AFTER}"\` Breaks the line after jsdoc tag or decorator in the fixer (default: false)
         `,
         options: {
             type: 'array',
             items: {
                 type: 'string',
-                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG, OPTION_EXCLUDE_INTERFACES, OPTION_FIX_PASCAL_CASE],
+                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG, OPTION_EXCLUDE_INTERFACES, OPTION_FIX_PASCAL_CASE, OPTION_BREAK_LINE_AFTER],
             },
             minLength: 1,
             maxLength: 4,
@@ -78,13 +81,15 @@ export class Rule extends Lint.Rules.TypedRule {
         const hasDecoratorParameter = this.ruleArguments.indexOf(OPTION_DECORATOR) !== -1;
         const hasExcludeInterfacesParameter = this.ruleArguments.indexOf(OPTION_EXCLUDE_INTERFACES) !== -1;
         const hasPascalCaseParameter = this.ruleArguments.indexOf(OPTION_FIX_PASCAL_CASE) !== -1;
+        const hasBreakLineAfterParameter = this.ruleArguments.indexOf(OPTION_BREAK_LINE_AFTER) !== -1;
 
         return this.applyWithWalker(
             new Walker(sourceFile, this.ruleName, {
                 useDecorator: hasDecoratorParameter || !hasJsDocParameter,
                 useJsdocTag: hasJsDocParameter || !hasDecoratorParameter,
                 excludeInterfaces: hasExcludeInterfacesParameter,
-                usePascalCase: hasPascalCaseParameter
+                usePascalCase: hasPascalCaseParameter,
+                breakLineAfter: hasBreakLineAfterParameter
             }, program.getTypeChecker()));
     }
 }
@@ -177,6 +182,8 @@ class Walker extends Lint.AbstractWalker<IOptions> {
             // But no base symbol was found
             (base === undefined || base.baseClass === undefined && base.baseInterface === undefined)
         ) {
+            // TODO: When given two @override decorators following each other (with a new line or a whitespace between them),
+            // the fixer does not break the line
             this.addFailureAtNode(node.name, MESSAGE_EXTRA_NO_OVERRIDE, fixRemoveOverrideKeyword(foundKeyword));
         } else if (
             // This member does not declare @override
@@ -197,6 +204,10 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private fixWithDecorator(node: AllClassElements) {
+        if (this._options.breakLineAfter) {
+            const indent = this.findIndentationOfNode(node);
+            return Lint.Replacement.appendText(node.getStart(), `@${this.getKeyword()}\n` + indent); // tslint:disable-line
+        }
         return Lint.Replacement.appendText(node.getStart(), `@${this.getKeyword()} `);
     }
 
@@ -216,8 +227,20 @@ class Walker extends Lint.AbstractWalker<IOptions> {
             return Lint.Replacement.appendText(lastDoc.getStart() + insertPos, fix);
         } else {
             // No Jsdoc found, create a new one with just the tag
+            if (this._options.breakLineAfter) {
+                const indent = this.findIndentationOfNode(node);
+                return Lint.Replacement.appendText(node.getStart(), `/** @${this.getKeyword()} */\n` + indent);
+            }
             return Lint.Replacement.appendText(node.getStart(), `/** @${this.getKeyword()} */ `);
         }
+    }
+
+    private findIndentationOfNode(node: AllClassElements): string {
+        let text = node.getFullText();
+        const tokenStart = text.indexOf(node.getText());
+        text = text.substr(0, tokenStart);
+        const lastNL = text.lastIndexOf('\n');
+        return text.substr(lastNL + 1);
     }
 
     private findJSDocIndentationAtPos(text: string, pos: number): string {

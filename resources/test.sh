@@ -27,3 +27,15 @@ cp "${FIX_TEST_DIR}/spec.bad.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
 npm run tslint -- --fix -c ${FIX_TEST_DIR}/tslint.pascal.json -p "${FIX_TEST_DIR}"
 diff "${FIX_TEST_DIR}/spec.fixed.pascal.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
 node_modules/.bin/ts-node -P "${FIX_TEST_DIR}/tsconfig.json" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+
+# Repeat for the break-line-after fixer in jsdoc settings
+cp "${FIX_TEST_DIR}/spec.bad.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+npm run tslint -- --fix -c ${FIX_TEST_DIR}/tslint.breakLineJsdoc.json -p "${FIX_TEST_DIR}"
+diff "${FIX_TEST_DIR}/spec.fixed.breakLineJsdoc.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+node_modules/.bin/ts-node -P "${FIX_TEST_DIR}/tsconfig.json" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+
+# Repeat for the break-line-after fixer in decorator settings
+cp "${FIX_TEST_DIR}/spec.bad.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+npm run tslint -- --fix -c ${FIX_TEST_DIR}/tslint.breakLineDecorator.json -p "${FIX_TEST_DIR}"
+diff "${FIX_TEST_DIR}/spec.fixed.breakLineDecorator.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+node_modules/.bin/ts-node -P "${FIX_TEST_DIR}/tsconfig.json" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
