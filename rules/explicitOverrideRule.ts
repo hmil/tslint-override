@@ -27,7 +27,7 @@ const OPTION_DECORATOR = 'decorator';
 const OPTION_JSDOC_TAG = 'jsdoc';
 const OPTION_EXCLUDE_INTERFACES = 'exclude-interfaces';
 const OPTION_FIX_PASCAL_CASE = 'pascal-case-fixer';
-const OPTION_BREAK_LINE_AFTER = 'fixer-break-line-after';
+const OPTION_NEW_LINE_AFTER = 'new-line-after-decorators-and-tags';
 
 const MESSAGE_EXTRA_CONSTRUCTOR = 'Extraneous override keyword: constructors always override the parent';
 const MESSAGE_EXTRA_STATIC = 'Extraneous override keyword: static members cannot override';
@@ -40,7 +40,7 @@ interface IOptions {
     useDecorator: boolean;
     excludeInterfaces: boolean;
     usePascalCase: boolean;
-    breakLineAfter: boolean;
+    newLineAfter: boolean;
 }
 
 export class Rule extends Lint.Rules.TypedRule {
@@ -59,16 +59,16 @@ export class Rule extends Lint.Rules.TypedRule {
             * \`"${OPTION_JSDOC_TAG}"\` (default) Uses a jsdoc tag: \`/** @override */ method() { }\`
             * \`"${OPTION_EXCLUDE_INTERFACES}"\` Exclude interfaces from member override checks (default: false)
             * \`"${OPTION_FIX_PASCAL_CASE}"\` Uses PascalCase \`@Override\` for the jsdoc tag or decorator in the fixer (default: false)
-            * \`"${OPTION_BREAK_LINE_AFTER}"\` Breaks the line after the jsdoc tag or decorator in the fixer (default: false)
+            * \`"${OPTION_NEW_LINE_AFTER}"\` Breaks the line after the jsdoc tag or decorator in the fixer (default: false)
         `,
         options: {
             type: 'array',
             items: {
                 type: 'string',
-                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG, OPTION_EXCLUDE_INTERFACES, OPTION_FIX_PASCAL_CASE, OPTION_BREAK_LINE_AFTER],
+                enum: [OPTION_DECORATOR, OPTION_JSDOC_TAG, OPTION_EXCLUDE_INTERFACES, OPTION_FIX_PASCAL_CASE, OPTION_NEW_LINE_AFTER],
             },
             minLength: 1,
-            maxLength: 4,
+            maxLength: 5,
         },
         optionExamples: [[true, OPTION_DECORATOR]],
         type: 'typescript',
@@ -81,7 +81,7 @@ export class Rule extends Lint.Rules.TypedRule {
         const hasDecoratorParameter = this.ruleArguments.indexOf(OPTION_DECORATOR) !== -1;
         const hasExcludeInterfacesParameter = this.ruleArguments.indexOf(OPTION_EXCLUDE_INTERFACES) !== -1;
         const hasPascalCaseParameter = this.ruleArguments.indexOf(OPTION_FIX_PASCAL_CASE) !== -1;
-        const hasBreakLineAfterParameter = this.ruleArguments.indexOf(OPTION_BREAK_LINE_AFTER) !== -1;
+        const hasBreakLineAfterParameter = this.ruleArguments.indexOf(OPTION_NEW_LINE_AFTER) !== -1;
 
         return this.applyWithWalker(
             new Walker(sourceFile, this.ruleName, {
@@ -89,7 +89,7 @@ export class Rule extends Lint.Rules.TypedRule {
                 useJsdocTag: hasJsDocParameter || !hasDecoratorParameter,
                 excludeInterfaces: hasExcludeInterfacesParameter,
                 usePascalCase: hasPascalCaseParameter,
-                breakLineAfter: hasBreakLineAfterParameter
+                newLineAfter: hasBreakLineAfterParameter
             }, program.getTypeChecker()));
     }
 }
@@ -204,7 +204,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private fixWithDecorator(node: AllClassElements) {
-        if (this._options.breakLineAfter) {
+        if (this._options.newLineAfter) {
             const indent = this.findIndentationOfNode(node);
             return Lint.Replacement.appendText(node.getStart(), `@${this.getKeyword()}\n` + indent); // tslint:disable-line
         }
@@ -227,7 +227,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
             return Lint.Replacement.appendText(lastDoc.getStart() + insertPos, fix);
         } else {
             // No Jsdoc found, create a new one with just the tag
-            if (this._options.breakLineAfter) {
+            if (this._options.newLineAfter) {
                 const indent = this.findIndentationOfNode(node);
                 return Lint.Replacement.appendText(node.getStart(), `/** @${this.getKeyword()} */\n` + indent);
             }

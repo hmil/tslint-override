@@ -1,6 +1,6 @@
 {
     "extends": "../../tslint-override.json",
     "rules": {
-        "explicit-override": [ true, "fixer-break-line-after" ]
+        "explicit-override": [ true, "new-line-after-decorators-and-tags" ]
     }
 }

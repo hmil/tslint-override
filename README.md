@@ -130,7 +130,7 @@ Note: `tslint-override/register` does not support the PascalCase `@Override` dec
 
 ### Enforcing a new line in the fixer
 
-If you want the fixer to put a new line after the tag use hte `fixer-break-line-after` option.
+If you want the fixer to put a new line after the tag use the `new-line-after-decorators-and-tags` option.
 
 ```json
 {
@@ -138,7 +138,7 @@ If you want the fixer to put a new line after the tag use hte `fixer-break-line-
         "tslint-override"
     ],
     "rules": {
-        "explicit-override": [ true, "fixer-break-line-after" ]
+        "explicit-override": [ true, "new-line-after-decorators-and-tags" ]
     }
 }
 ```
@@ -149,7 +149,7 @@ or
         "tslint-override"
     ],
     "rules": {
-        "explicit-override": [ true, "decorator", "fixer-break-line-after" ]
+        "explicit-override": [ true, "decorator", "new-line-after-decorators-and-tags" ]
     }
 }
 ```
@@ -169,7 +169,7 @@ Author: [@hmil](https://github.com/hmil)
 Contributions:
 - [@Yuudaari](https://github.com/Yuudaari) - Added `pascal-case-fixer` option.
 - [@stasberkov](https://github.com/stasberkov) - Added `exclude-interfaces` option.
-- [@mzyil](https://github.com/mzyil) - Added `fixer-break-line-after` option.
+- [@mzyil](https://github.com/mzyil) - Added `new-line-after-decorators-and-tags` option.
 
 License: MIT
 
