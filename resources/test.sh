@@ -27,3 +27,15 @@ cp "${FIX_TEST_DIR}/spec.bad.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
 npm run tslint -- --fix -c ${FIX_TEST_DIR}/tslint.pascal.json -p "${FIX_TEST_DIR}"
 diff "${FIX_TEST_DIR}/spec.fixed.pascal.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
 node_modules/.bin/ts-node -P "${FIX_TEST_DIR}/tsconfig.json" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+
+# Repeat for the new-line-after-decorators-and-tags in jsdoc settings
+cp "${FIX_TEST_DIR}/spec.bad.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+npm run tslint -- --fix -c ${FIX_TEST_DIR}/tslint.newLineJsdoc.json -p "${FIX_TEST_DIR}"
+diff "${FIX_TEST_DIR}/spec.fixed.newLineJsdoc.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+node_modules/.bin/ts-node -P "${FIX_TEST_DIR}/tsconfig.json" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+
+# Repeat for the new-line-after-decorators-and-tags in decorator settings
+cp "${FIX_TEST_DIR}/spec.bad.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+npm run tslint -- --fix -c ${FIX_TEST_DIR}/tslint.newLineDecorator.json -p "${FIX_TEST_DIR}"
+diff "${FIX_TEST_DIR}/spec.fixed.newLineDecorator.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+node_modules/.bin/ts-node -P "${FIX_TEST_DIR}/tsconfig.json" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
