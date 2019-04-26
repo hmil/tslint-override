@@ -76,3 +76,7 @@ export class Baz extends Foo {
     public overloadedMethod(v: string): void;
     public overloadedMethod(v?: string): void { }
 }
+
+export const Fiz = class extends Foo {
+    public bar() { };
+};
