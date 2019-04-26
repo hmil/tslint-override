@@ -181,6 +181,13 @@ class Walker extends Lint.AbstractWalker<IOptions> {
         if (parent == null || !isClassType(parent)) {
             return;
         }
+
+        if (ts.isClassExpression(parent) && !this._options.useJsdocTag) {
+            // decorators are not allowed in anonymous class declarations.
+            // Skip anonymous class declarations if JSDoc tags are not an option.
+            return;
+        }
+
         const base = this.checkHeritageChain(parent, node);
 
         if (
@@ -205,9 +212,9 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private fixAddOverrideKeyword(node: AllClassElements) {
-       return (this._options.useJsdocTag) ?
-            this.fixWithJSDocTag(node) :
-            this.fixWithDecorator(node);
+        return (this._options.useJsdocTag) ?
+                this.fixWithJSDocTag(node) :
+                this.fixWithDecorator(node);
     }
 
     private fixWithDecorator(node: AllClassElements) {

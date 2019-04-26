@@ -78,3 +78,7 @@ export class Baz extends Foo {
     public overloadedMethod(v: string): void;
     /** @override */ public overloadedMethod(v?: string): void { }
 }
+
+export const Fiz = class extends Foo {
+    /** @override */ public bar() { };
+};

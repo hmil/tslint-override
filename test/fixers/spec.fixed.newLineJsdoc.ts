@@ -80,3 +80,8 @@ export class Baz extends Foo {
     /** @override */
     public overloadedMethod(v?: string): void { }
 }
+
+export const Fiz = class extends Foo {
+    /** @override */
+    public bar() { };
+};
