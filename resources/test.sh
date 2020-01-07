@@ -4,6 +4,7 @@
 
 tslint --test test
 node_modules/.bin/ts-node -P test/tsconfig.json test/test.ts
+node_modules/.bin/ts-node -P test/tsconfig.json test/test-angular.ts
 tslint -p test test/test.ts
 tslint -p test/exclude-interfaces
 
@@ -11,7 +12,7 @@ tslint -p test/exclude-interfaces
 
 FIX_TEST_DIR="test/fixers"
 
-cp "${FIX_TEST_DIR}/spec.bad.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts" # Make a copy to keep the original untouched
+cp "${FIX_TEST_DIR}/spec.bad.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts" # Make a copy to keep the original untouched
 npm run tslint -- --fix -p "${FIX_TEST_DIR}" # Fix
 diff "${FIX_TEST_DIR}/spec.fixed.jsdoc.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts" # Check the result against the reference
 node_modules/.bin/ts-node -P "${FIX_TEST_DIR}/tsconfig.json" "${FIX_TEST_DIR}/spec.bad.tofix.ts" # Check that the result is valid for tsc

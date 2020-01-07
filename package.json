@@ -33,7 +33,9 @@
         "rules/*.js",
         "tslint-override.json",
         "register.js",
-        "register.d.ts"
+        "register.d.ts",
+        "angular-register.js",
+        "angular-register.d.ts"
     ],
     "homepage": "https://github.com/hmil/tslint-override#readme",
     "devDependencies": {
