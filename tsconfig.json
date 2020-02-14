@@ -13,7 +13,6 @@
     },
     "include": [
         "rules/*.ts",
-        "register.ts",
-        "angular-register.ts"
+        "register.ts"
     ]
 }

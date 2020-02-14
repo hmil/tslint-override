@@ -12,7 +12,6 @@
     ]
   },
   "include": [
-      "test.ts",
-      "test-angular.ts"
+      "test.ts"
   ]
 }

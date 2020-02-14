@@ -4,7 +4,7 @@
 
 tslint --test test
 node_modules/.bin/ts-node -P test/tsconfig.json test/test.ts
-node_modules/.bin/ts-node -P test/tsconfig.json test/test-angular.ts
+node_modules/.bin/ts-node -P test/tsconfig.angular.json test/test-angular.ts
 tslint -p test test/test.ts
 tslint -p test/exclude-interfaces
 

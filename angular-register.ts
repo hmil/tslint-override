@@ -3,6 +3,7 @@
 
 declare type NoopDecorator = () => (_target: any, _propertyKey: string, _descriptor?: PropertyDescriptor) => void;
 
+declare var global: NodeJS.Global;
 declare global {
   /**
    * Indicates that this function or variable is being overridden
@@ -19,8 +20,20 @@ declare global {
    * @see [TSLint Override](https://github.com/hmil/tslint-override)
    */
   var Override: NoopDecorator;
+
+  interface Window {
+    override: NoopDecorator;
+    Override: NoopDecorator;
+  }
+
+  namespace NodeJS {
+    interface Global {
+      override: NoopDecorator;
+      Override: NoopDecorator;
+    }
+  }
 }
 
-export const ctx = this;
+export const ctx = typeof global === 'undefined' ? window : global;
 ctx.override = () => () => { /* noop */ };
 ctx.Override = () => () => { /* noop */ };
