@@ -170,6 +170,7 @@ Contributions:
 - [@Yuudaari](https://github.com/Yuudaari) - Added `pascal-case-fixer` option.
 - [@stasberkov](https://github.com/stasberkov) - Added `exclude-interfaces` option.
 - [@mzyil](https://github.com/mzyil) - Added `new-line-after-decorators-and-tags` option.
+- [@wSedlacek](https://github.com/wSedlacek) - Added angular-friendly decorator.
 
 License: MIT
 
