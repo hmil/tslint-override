@@ -7,7 +7,7 @@
         "test": "resources/test.sh",
         "lint": "tslint -p .",
         "tslint": "tslint",
-        "build": "npm run clean && tsc -p .",
+        "build": "npm run clean && tsc -p . && tsc -p ./tsconfig.angular.json",
         "clean": "rm -f rules/*.js rules/*.d.ts *.js *.d.ts",
         "release": "ts-node resources/release.sh.ts"
     },
@@ -33,7 +33,9 @@
         "rules/*.js",
         "tslint-override.json",
         "register.js",
-        "register.d.ts"
+        "register.d.ts",
+        "angular-register.js",
+        "angular-register.d.ts"
     ],
     "homepage": "https://github.com/hmil/tslint-override#readme",
     "devDependencies": {
