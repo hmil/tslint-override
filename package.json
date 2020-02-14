@@ -7,7 +7,7 @@
         "test": "resources/test.sh",
         "lint": "tslint -p .",
         "tslint": "tslint",
-        "build": "npm run clean && tsc -p .",
+        "build": "npm run clean && tsc -p . && tsc -p ./tsconfig.angular.json",
         "clean": "rm -f rules/*.js rules/*.d.ts *.js *.d.ts",
         "release": "ts-node resources/release.sh.ts"
     },
