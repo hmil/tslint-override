@@ -28,7 +28,7 @@ const OPTION_JSDOC_TAG = 'jsdoc';
 const OPTION_EXCLUDE_INTERFACES = 'exclude-interfaces';
 const OPTION_FIX_PASCAL_CASE = 'pascal-case-fixer';
 const OPTION_NEW_LINE_AFTER_DECORATORS_AND_TAGS = 'new-line-after-decorators-and-tags';
-const OPTION_ANGULAR_SYNTAX = 'angular-syntax';
+const OPTION_ANGULAR_SYNTAX = 'angular-syntax-fixer';
 
 const MESSAGE_EXTRA_CONSTRUCTOR = 'Extraneous override keyword: constructors always override the parent';
 const MESSAGE_EXTRA_STATIC = 'Extraneous override keyword: static members cannot override';

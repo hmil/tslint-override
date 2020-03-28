@@ -1,6 +1,6 @@
 {
   "extends": "../../tslint-override.json",
   "rules": {
-      "explicit-override": [ true, "decorator", "angular-syntax" ]
+      "explicit-override": [ true, "decorator", "angular-syntax-fixer" ]
   }
 }
