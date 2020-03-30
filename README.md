@@ -154,9 +154,38 @@ or
 }
 ```
 
+### _Angular_-friendly syntax (decorator with parenthesis)
+
+`tslint-override` offers an angular-friendly decorator syntax, where the decorator is called with a pair of parenthesis.
+
+```typescript
+import 'tslint-override/angular-register';
+```
+
+You can then use `@Override()` or `@override()` anywhere in your code:
+
+```typescript
+class Foo extends Basic {
+    @Override() public doStuff() { }
+}
+```
+
+Add the setting `angular-syntax-fixer` to let tslint know to use parenthesis when fixing code.
+
+```json
+{
+    "extends": [
+        "tslint-override"
+    ],
+    "rules": {
+        "explicit-override": [ true, "decorator", "angular-syntax-fixer", "pascal-case-fixer" ]
+    }
+}
+```
+
 ---
 
-### IDE support
+## IDE support
 
 This rule *requires type information*. If you are still using [vscode-tslint](https://github.com/Microsoft/vscode-tslint) you should switch over to using the [tslint-language-service](https://github.com/angelozerr/tslint-language-service) because _vscode-tslint_ won't show the errors reported by _tslint-override_.
 
@@ -165,7 +194,7 @@ Example in VSCode:
 
 ## Contributing, Credits, etc
 
-Author: [@hmil](https://github.com/hmil)
+Author: [@hmil](https://github.com/hmil)  
 Contributions:
 - [@Yuudaari](https://github.com/Yuudaari) - Added `pascal-case-fixer` option.
 - [@stasberkov](https://github.com/stasberkov) - Added `exclude-interfaces` option.
