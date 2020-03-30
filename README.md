@@ -165,12 +165,12 @@ Example in VSCode:
 
 ## Contributing, Credits, etc
 
-Author: [@hmil](https://github.com/hmil)  
+Author: [@hmil](https://github.com/hmil)
 Contributions:
 - [@Yuudaari](https://github.com/Yuudaari) - Added `pascal-case-fixer` option.
 - [@stasberkov](https://github.com/stasberkov) - Added `exclude-interfaces` option.
 - [@mzyil](https://github.com/mzyil) - Added `new-line-after-decorators-and-tags` option.
-- [@wSedlacek](https://github.com/wSedlacek) - Added angular-friendly decorator.
+- [@wSedlacek](https://github.com/wSedlacek) - Added angular-friendly decorator and `angular-syntax-fixer` option.
 
 License: MIT
 

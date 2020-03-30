@@ -28,6 +28,7 @@ const OPTION_JSDOC_TAG = 'jsdoc';
 const OPTION_EXCLUDE_INTERFACES = 'exclude-interfaces';
 const OPTION_FIX_PASCAL_CASE = 'pascal-case-fixer';
 const OPTION_NEW_LINE_AFTER_DECORATORS_AND_TAGS = 'new-line-after-decorators-and-tags';
+const OPTION_ANGULAR_SYNTAX = 'angular-syntax-fixer';
 
 const MESSAGE_EXTRA_CONSTRUCTOR = 'Extraneous override keyword: constructors always override the parent';
 const MESSAGE_EXTRA_STATIC = 'Extraneous override keyword: static members cannot override';
@@ -41,6 +42,7 @@ interface IOptions {
     excludeInterfaces: boolean;
     usePascalCase: boolean;
     newLineAfter: boolean;
+    useAngularSyntax: boolean;
 }
 
 export class Rule extends Lint.Rules.TypedRule {
@@ -61,6 +63,7 @@ export class Rule extends Lint.Rules.TypedRule {
             * \`"${OPTION_FIX_PASCAL_CASE}"\` Uses PascalCase \`@Override\` for the jsdoc tag or decorator in the fixer (default: false)
             * \`"${OPTION_NEW_LINE_AFTER_DECORATORS_AND_TAGS}"\` ` +
                     `Breaks the line after the jsdoc tag or decorator in the fixer (default: false)
+            * \`"${OPTION_ANGULAR_SYNTAX}"\` Uses Angular Syntax (aka Legacy Decorator Proposal) where the decorator is a function
         `,
         options: {
             type: 'array',
@@ -71,7 +74,8 @@ export class Rule extends Lint.Rules.TypedRule {
                     OPTION_JSDOC_TAG,
                     OPTION_EXCLUDE_INTERFACES,
                     OPTION_FIX_PASCAL_CASE,
-                    OPTION_NEW_LINE_AFTER_DECORATORS_AND_TAGS
+                    OPTION_NEW_LINE_AFTER_DECORATORS_AND_TAGS,
+                    OPTION_ANGULAR_SYNTAX
                 ],
             },
             minLength: 1,
@@ -89,6 +93,7 @@ export class Rule extends Lint.Rules.TypedRule {
         const hasExcludeInterfacesParameter = this.ruleArguments.indexOf(OPTION_EXCLUDE_INTERFACES) !== -1;
         const hasPascalCaseParameter = this.ruleArguments.indexOf(OPTION_FIX_PASCAL_CASE) !== -1;
         const hasNewLineAfterParameter = this.ruleArguments.indexOf(OPTION_NEW_LINE_AFTER_DECORATORS_AND_TAGS) !== -1;
+        const hasAngularSyntaxParameter = this.ruleArguments.indexOf(OPTION_ANGULAR_SYNTAX) !== -1;
 
         return this.applyWithWalker(
             new Walker(sourceFile, this.ruleName, {
@@ -96,7 +101,8 @@ export class Rule extends Lint.Rules.TypedRule {
                 useJsdocTag: hasJsDocParameter || !hasDecoratorParameter,
                 excludeInterfaces: hasExcludeInterfacesParameter,
                 usePascalCase: hasPascalCaseParameter,
-                newLineAfter: hasNewLineAfterParameter
+                newLineAfter: hasNewLineAfterParameter,
+                useAngularSyntax: hasAngularSyntaxParameter
             }, program.getTypeChecker()));
     }
 }
@@ -398,7 +404,8 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     }
 
     private getKeyword() {
-        return this._options.usePascalCase ? OVERRIDE_KEYWORD_PASCAL : OVERRIDE_KEYWORD_CAMEL;
+        const keyword = this._options.usePascalCase ? OVERRIDE_KEYWORD_PASCAL : OVERRIDE_KEYWORD_CAMEL;
+        return this._options.useAngularSyntax ? `${keyword}()` : `${keyword}`;
     }
 }
 

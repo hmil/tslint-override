@@ -41,4 +41,10 @@ npm run tslint -- --fix -c ${FIX_TEST_DIR}/tslint.newLineDecorator.json -p "${FI
 diff "${FIX_TEST_DIR}/spec.fixed.newLineDecorator.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
 node_modules/.bin/ts-node -P "${FIX_TEST_DIR}/tsconfig.json" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
 
+# Repeat for the angular-syntax-fixer in decorator settings
+cp "${FIX_TEST_DIR}/spec.bad.angular.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+npm run tslint -- --fix -c ${FIX_TEST_DIR}/tslint.angular.json -p "${FIX_TEST_DIR}"
+diff "${FIX_TEST_DIR}/spec.fixed.angular.ts" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+node_modules/.bin/ts-node -P "${FIX_TEST_DIR}/tsconfig.json" "${FIX_TEST_DIR}/spec.bad.tofix.ts"
+
 echo "Success"
