@@ -34,6 +34,12 @@ declare global {
   }
 }
 
-export const ctx = typeof global === 'undefined' ? window : global;
-ctx.override = () => () => { /* noop */ };
-ctx.Override = () => () => { /* noop */ };
+export const ctx =
+  typeof global === 'undefined' ? (typeof window === 'undefined' ? undefined : window) : global;
+export const override: NoopDecorator = () => () => { /* noop */ };
+export const Override: NoopDecorator = () => () => { /* noop */ };
+
+if (ctx) {
+  ctx.override = override;
+  ctx.Override = Override;
+}
