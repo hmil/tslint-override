@@ -1,7 +1,11 @@
 // tslint:disable callable-types
 // tslint:disable variable-name
 
-declare type NoopDecorator = () => (_target: any, _propertyKey: string, _descriptor?: PropertyDescriptor) => void;
+declare type NoopDecorator = () => (
+  _target: Object,
+  _propertyKey: string,
+  _descriptor?: PropertyDescriptor
+) => void;
 
 declare var global: NodeJS.Global;
 declare global {
@@ -35,7 +39,7 @@ declare global {
 }
 
 export const ctx =
-  typeof global === 'undefined' ? (typeof window === 'undefined' ? undefined : window) : global;
+  typeof global === 'undefined' ? (typeof self === 'undefined' ? undefined : self) : global;
 export const override: NoopDecorator = () => () => { /* noop */ };
 export const Override: NoopDecorator = () => () => { /* noop */ };
 
