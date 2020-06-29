@@ -1,3 +1,5 @@
+/// <reference lib="webworker" />
+
 // tslint:disable callable-types
 // tslint:disable variable-name
 
@@ -26,6 +28,11 @@ declare global {
   var Override: NoopDecorator;
 
   interface Window {
+    override: NoopDecorator;
+    Override: NoopDecorator;
+  }
+
+  interface WorkerGlobalScope {
     override: NoopDecorator;
     Override: NoopDecorator;
   }
