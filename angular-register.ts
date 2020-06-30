@@ -1,10 +1,8 @@
-/// <reference lib="webworker" />
-
 // tslint:disable callable-types
 // tslint:disable variable-name
 
 declare type NoopDecorator = () => (
-  _target: Object,
+  _target: object,
   _propertyKey: string,
   _descriptor?: PropertyDescriptor
 ) => void;
