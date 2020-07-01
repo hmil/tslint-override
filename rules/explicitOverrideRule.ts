@@ -374,7 +374,7 @@ class Walker extends Lint.AbstractWalker<IOptions> {
     private checkHeritageChain(declaration: ts.ClassDeclaration | ts.ClassExpression, node: OverrideableElement)
             : HeritageChainCheckResult {
 
-        let baseInterface: ts.Type | undefined;
+        let baseInterface: ts.Type | undefined;
         let baseClass: ts.Type | undefined;
 
         const currentDeclaration = declaration;
