@@ -1,30 +1,54 @@
+// tslint:disable callable-types
+// tslint:disable variable-name
 
+declare type NoopDecorator = (
+  _target: object,
+  _propertyKey: string,
+  _descriptor?: PropertyDescriptor
+) => void;
+
+declare var global: NodeJS.Global;
 declare global {
+  /**
+   * Indicates that this function or variable is being overridden
+   * from the implemented or extended parent class.
+   *
+   * @see [TSLint Override](https://github.com/hmil/tslint-override)
+   */
+  var override: NoopDecorator;
 
-    /**
-     * Specifies that this member must override a parent member.
-     */
-    const override: (_target: any, _propertyKey: string, _descriptor?: PropertyDescriptor) => void;
+  /**
+   * Indicates that this function or variable is being overridden
+   * from the implemented or extended parent class.
+   *
+   * @see [TSLint Override](https://github.com/hmil/tslint-override)
+   */
+  var Override: NoopDecorator;
 
-    interface Window {
-        override: (_target: any, _propertyKey: string, _descriptor?: PropertyDescriptor) => void;
+  interface Window {
+    override: NoopDecorator;
+    Override: NoopDecorator;
+  }
+
+  interface WorkerGlobalScope {
+    override: NoopDecorator;
+    Override: NoopDecorator;
+  }
+
+  namespace NodeJS {
+    interface Global {
+      override: NoopDecorator;
+      Override: NoopDecorator;
     }
-
-    namespace NodeJS {
-        interface Global {
-            override: (_target: any, _propertyKey: string, _descriptor?: PropertyDescriptor) => void;
-        }
-    }
+  }
 }
 
-export const ctx = typeof window !== 'undefined' ?
-    window : global;
+export const ctx =
+  typeof global === 'undefined' ? (typeof self === 'undefined' ? undefined : self) : global;
+export const override: NoopDecorator = () => { /* noop */ };
+export const Override: NoopDecorator = () => { /* noop */ };
 
-/**
- * Specifies that this member must override a parent member.
- */
-export function override(_target: any, _propertyKey: string, _descriptor?: PropertyDescriptor) {
-    // noop
+if (ctx) {
+  ctx.override = override;
+  ctx.Override = Override;
 }
-
-ctx.override = override;
